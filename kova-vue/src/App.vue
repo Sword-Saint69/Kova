@@ -35,17 +35,13 @@ import Footer from './components/Footer.vue';
 
 /* Page transition CSS */
 .page-enter-active {
-  transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+  transition: opacity 0.32s var(--ease-out),
+              transform 0.32s var(--ease-out);
 }
 .page-leave-active {
-  transition: opacity 0.2s ease-in, transform 0.2s ease-in;
+  transition: opacity 0.22s var(--ease-in),
+              transform 0.22s var(--ease-in);
 }
-.page-enter-from {
-  opacity: 0;
-  transform: translateY(8px);
-}
-.page-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
-}
+.page-enter-from { opacity: 0; transform: translateY(10px); }
+.page-leave-to   { opacity: 0; transform: translateY(-6px); }
 </style>
