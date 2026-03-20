@@ -13,7 +13,7 @@
           >{{ word }}&nbsp;</span>
         </h2>
         <div class="cta-actions space-y-4" :class="{ visible: isVisible }">
-          <button class="px-10 py-5 bg-black text-white font-black rounded-2xl text-lg hover:scale-105 transition-transform shadow-2xl">
+          <button class="px-10 py-5 bg-on-primary-container text-[#0a0a0a] font-black rounded-2xl text-lg hover:scale-105 transition-transform shadow-2xl">
             Start your monograph →
           </button>
           <p class="text-[13px] font-light text-black/45">Free forever. No credit card required.</p>

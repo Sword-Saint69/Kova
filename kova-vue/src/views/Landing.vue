@@ -5,7 +5,6 @@ import BentoGrid from '../components/BentoGrid.vue';
 import DashboardMockup from '../components/DashboardMockup.vue';
 import Process from '../components/Process.vue';
 import Testimonials from '../components/Testimonials.vue';
-import Team from '../components/Team.vue';
 import Pricing from '../components/Pricing.vue';
 import CtaBanner from '../components/CtaBanner.vue';
 import Footer from '../components/Footer.vue';
@@ -26,7 +25,6 @@ import ScrollProgress from '../components/ScrollProgress.vue';
         <BentoGrid id="features" />
         <DashboardMockup id="dashboard" />
         <Process id="how-it-works" />
-        <Team id="team" />
         <Testimonials />
         <Pricing id="pricing" />
         <CtaBanner />
