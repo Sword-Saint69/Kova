@@ -221,6 +221,7 @@ const user = ref({ name: 'User' });
 const habits = ref([]);
 const loading = ref(true);
 const error = ref(null);
+const showRetry = ref(false);
 
 const selectedHabitId = ref(null);
 const topStreak = ref(0);
@@ -236,6 +237,7 @@ const currentDate = computed(() => {
 
 async function fetchDashboardData() {
   loading.value = true;
+  showRetry.value = false;
   
   try {
     // Try to get session with multiple retries to handle race conditions after login
@@ -252,8 +254,9 @@ async function fetchDashboardData() {
     }
     
     if (!session) {
-      console.warn("No session detected after retries. Redirecting to login...");
-      router.push('/login');
+      console.warn("No session detected after retries. Showing retry button.");
+      showRetry.value = true;
+      loading.value = false;
       return;
     }
   
