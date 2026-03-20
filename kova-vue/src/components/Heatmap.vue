@@ -13,7 +13,6 @@ const props = defineProps({
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-// Precise color scale from FIX 2
 const colors = {
   empty: '#181818',
   level1: '#085041',
@@ -29,23 +28,22 @@ const cells = computed(() => {
     const col = Math.floor(i / props.rows);
     let level = 0;
     
-    // Exact weighting spec:
     const random = Math.random();
-    if (col >= 0 && col <= 15) { // Jan-Mar: 80% empty, rest levels 1-2
+    if (col >= 0 && col <= 15) {
       if (random < 0.80) level = 0;
       else if (random < 0.95) level = 1;
       else level = 2;
-    } else if (col >= 16 && col <= 30) { // Apr-Jun: 40% empty, 60% levels 1-3
+    } else if (col >= 16 && col <= 30) {
       if (random < 0.40) level = 0;
       else if (random < 0.60) level = 1;
       else if (random < 0.80) level = 2;
       else level = 3;
-    } else if (col >= 31 && col <= 43) { // Jul-Aug: 20% empty, 80% levels 2-4
+    } else if (col >= 31 && col <= 43) {
       if (random < 0.20) level = 0;
       else if (random < 0.45) level = 2;
       else if (random < 0.70) level = 3;
       else level = 4;
-    } else if (col >= 44 && col <= 51) { // Sep-Oct: 8% empty, 70% levels 4-5
+    } else if (col >= 44 && col <= 51) {
       if (random < 0.08) level = 0;
       else if (random < 0.30) level = 3;
       else if (random < 0.65) level = 4;
@@ -75,11 +73,12 @@ const legendLevels = [0, 1, 2, 3, 4, 5];
         gap: gap 
       }"
     >
+      <!-- ANIMATION 1: Heatmap cell hover — scale + glow pulse -->
       <div
         v-for="cell in cells"
         :key="cell.id"
-        class="rounded-[2px] transition-all duration-500"
-        :class="{ 'shadow-[0_0_8px_rgba(160,236,6,0.4)]': cell.level === 5 }"
+        class="heatmap-cell rounded-[2px]"
+        :class="{ 'cell-lime': cell.level === 5 }"
         :style="{ 
           width: cellSize, 
           height: cellSize, 
@@ -116,10 +115,68 @@ const legendLevels = [0, 1, 2, 3, 4, 5];
             <span class="text-[10px] opacity-20 font-body">More</span>
         </div>
         
-        <!-- Streak Badge -->
-        <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/25">
-            <span class="text-primary text-[12px] font-medium leading-none">🔥 32-day streak</span>
+        <!-- ANIMATION 10: Streak Badge — soft glow ring pulse -->
+        <div class="streak-badge">
+            <span class="streak-flame">🔥</span>
+            <span class="text-primary text-[12px] font-medium leading-none">32-day streak</span>
         </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* ANIMATION 1 — Heatmap cell hover: scale + glow */
+.heatmap-cell {
+  transition: transform 120ms var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)),
+              box-shadow 120ms ease;
+  cursor: default;
+}
+.heatmap-cell:hover {
+  transform: scale(1.6);
+  z-index: 10;
+  position: relative;
+  box-shadow: 0 0 6px rgba(160, 236, 6, 0.35);
+}
+.heatmap-cell.cell-lime {
+  box-shadow: 0 0 8px rgba(160, 236, 6, 0.4);
+}
+.heatmap-cell.cell-lime:hover {
+  box-shadow: 0 0 14px rgba(160, 236, 6, 0.7);
+}
+
+/* ANIMATION 10 — Streak badge soft glow ring pulse */
+.streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: rgba(160, 236, 6, 0.08);
+  border: 0.5px solid rgba(160, 236, 6, 0.25);
+  position: relative;
+}
+.streak-badge::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 99px;
+  border: 1px solid rgba(160, 236, 6, 0.35);
+  animation: streak-ring-pulse 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.streak-flame {
+  display: inline-block;
+  animation: flame-bob 1.8s ease-in-out infinite;
+}
+
+@keyframes streak-ring-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 0;   transform: scale(1.18); }
+}
+
+@keyframes flame-bob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%       { transform: translateY(-2px) rotate(3deg); }
+}
+</style>
