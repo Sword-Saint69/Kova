@@ -17,11 +17,11 @@ import Footer from './components/Footer.vue';
     <Transition name="page" mode="out-in" appear>
       <main class="shrink-0">
       <Hero />
-      <BentoGrid />
-      <DashboardMockup />
-      <Process />
+      <BentoGrid id="features" />
+      <DashboardMockup id="dashboard" />
+      <Process id="how-it-works" />
       <Testimonials />
-      <Pricing />
+      <Pricing id="pricing" />
       <CtaBanner />
       </main>
     </Transition>
