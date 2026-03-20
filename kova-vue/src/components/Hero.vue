@@ -29,7 +29,12 @@ function runStatBloom() {
   function tick(now) {
     const t = Math.min((now - startTime) / duration, 1);
     statDisplayed.value = Math.round(target * easeOutCubic(t));
-    if (t < 1) requestAnimationFrame(tick);
+    if (t < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      statDisplayed.value = 32;
+      statLocked.value = true; // lock permanently after bloom finishes
+    }
   }
   requestAnimationFrame(tick);
 }
