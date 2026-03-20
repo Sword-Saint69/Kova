@@ -5,7 +5,7 @@
       :key="cat.id"
       class="cat-pill"
       :class="{ active: modelValue === cat.id }"
-      @click="$emit('update:modelValue', cat.id)"
+      @click="handleClick(cat.id, $event)"
     >
       <div
         v-if="cat.color"
@@ -22,7 +22,24 @@ defineProps<{
   categories: { id: string; label: string; color?: string }[]
   modelValue: string
 }>()
-defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue'])
+
+function handleClick(id: string, e: MouseEvent) {
+  // ANIMATION 11: Ripple flood from click origin
+  const btn = e.currentTarget as HTMLElement;
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height) * 2;
+  ripple.style.cssText = `
+    width: ${size}px; height: ${size}px;
+    left: ${e.clientX - rect.left - size / 2}px;
+    top:  ${e.clientY - rect.top  - size / 2}px;
+  `;
+  btn.appendChild(ripple);
+  ripple.addEventListener('animationend', () => ripple.remove());
+  emit('update:modelValue', id);
+}
 </script>
 
 <style scoped>
@@ -37,12 +54,15 @@ defineEmits(['update:modelValue'])
   color: rgba(240,237,232,0.45);
   font-size: 13px; font-family: 'DM Sans', sans-serif;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  /* ANIMATION 11: smooth state transitions */
   transition:
-    background-color 200ms ease,
-    border-color     200ms ease,
-    color            200ms ease,
-    font-weight      100ms ease;
+    color 200ms ease,
+    border-color 200ms ease,
+    font-weight 100ms ease;
 }
+
 .cat-pill:hover {
   background: rgba(255,255,255,0.04);
   color: #f0ede8;
@@ -52,6 +72,19 @@ defineEmits(['update:modelValue'])
   border-color: #a0ec06;
   color: #0a0a0a;
   font-weight: 600;
+}
+
+/* ANIMATION 11 — Ripple flood from center on click */
+:global(.ripple) {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(160, 236, 6, 0.35);
+  transform: scale(0);
+  animation: ripple-out 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+}
+@keyframes ripple-out {
+  to { transform: scale(1); opacity: 0; }
 }
 
 .cat-dot {
