@@ -69,13 +69,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, inject } from 'vue';
+import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthLayout from '../components/AuthLayout.vue';
 import AuthInput from '../components/AuthInput.vue';
 import AuthButton from '../components/AuthButton.vue';
-
-const triggerSuccessWipe = inject('triggerSuccessWipe');
 
 const router = useRouter();
 const showPassword = ref(false);
@@ -101,8 +99,7 @@ async function handleSubmit() {
   await new Promise(r => setTimeout(r, 1200));
   loading.value = false;
   success.value = true;
-  if (triggerSuccessWipe) triggerSuccessWipe();
-  await new Promise(r => setTimeout(r, 800)); // allow success anim to play
+  await new Promise(r => setTimeout(r, 500)); 
   router.push('/');
 }
 </script>

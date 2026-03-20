@@ -71,7 +71,7 @@
       </AuthButton>
 
       <!-- Footer -->
-      <p class="text-center text-sm text-white/35 font-light pt-1">
+      <p class="text-center text-sm text-white/35 font-light pt-1 mb-12">
         Already have an account?
         <RouterLink to="/login" class="text-primary font-semibold ml-1 hover:underline underline-offset-4">Sign in</RouterLink>
       </p>
@@ -80,13 +80,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, inject } from 'vue';
+import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthLayout from '../components/AuthLayout.vue';
 import AuthInput from '../components/AuthInput.vue';
 import AuthButton from '../components/AuthButton.vue';
-
-const triggerSuccessWipe = inject('triggerSuccessWipe');
 
 const router = useRouter();
 const showPassword = ref(false);
@@ -115,8 +113,7 @@ async function handleSubmit() {
   await new Promise(r => setTimeout(r, 1200)); // simulate API
   loading.value = false;
   success.value = true;
-  if (triggerSuccessWipe) triggerSuccessWipe();
-  await new Promise(r => setTimeout(r, 800)); // allow success anim to play
+  await new Promise(r => setTimeout(r, 500)); 
   router.push('/');
 }
 </script>
