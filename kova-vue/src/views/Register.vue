@@ -59,6 +59,7 @@
         type="button"
         variant="ghost"
         text="Sign up with Google"
+        @click="handleGoogleSignIn"
       >
         <template #icon>
           <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24">
@@ -79,9 +80,9 @@
   </AuthLayout>
 </template>
 
-<script setup>
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
+import { authClient } from '../utils/auth';
 import AuthLayout from '../components/AuthLayout.vue';
 import AuthInput from '../components/AuthInput.vue';
 import AuthButton from '../components/AuthButton.vue';
@@ -103,6 +104,17 @@ function validate(field) {
   }
   if (field === 'password') {
     errors.password = form.password.length < 8 ? 'Password must be at least 8 characters.' : '';
+  }
+}
+
+async function handleGoogleSignIn() {
+  try {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: window.location.origin,
+    });
+  } catch (error) {
+    console.error("Google sign-in error:", error);
   }
 }
 
