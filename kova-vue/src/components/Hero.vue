@@ -66,23 +66,29 @@ function onRelease() { pressing.value = false; }
 
 /* ─── ANIMATION: Scroll-jacked stat + Parallax layers ─── */
 const heroEl = ref(null);
-const parallaxHeadline = ref(0); // translateY for headline block
-const parallaxStat = ref(0);     // translateY for stat block
+const parallaxHeadline = ref(0);
+const parallaxStat = ref(0);
+const statLocked = ref(false); // once we hit 32, stop going back
 
 function onHeroScroll() {
   const scrollY = window.scrollY;
   const heroH   = window.innerHeight;
 
-  // Only active while hero is in view
-  if (scrollY > heroH * 1.2) return;
+  // Parallax: only while hero is in view
+  if (scrollY <= heroH * 1.2) {
+    parallaxHeadline.value = scrollY * 0.35;
+    parallaxStat.value     = scrollY * 0.15;
+  }
 
-  // Parallax rates: headline moves slower (0.35x), stat even slower (0.15x)
-  parallaxHeadline.value = scrollY * 0.35;
-  parallaxStat.value     = scrollY * 0.15;
-
-  // Scroll-jacked stat: numericize scroll progress 0→32 over first 40% of hero height
-  const progress = Math.min(scrollY / (heroH * 0.4), 1);
-  statDisplayed.value = Math.round(32 * progress);
+  // Scroll-jacked stat: counts up as you scroll, locks at 32 — never goes back
+  if (!statLocked.value) {
+    const progress = Math.min(scrollY / (heroH * 0.4), 1);
+    statDisplayed.value = Math.round(32 * progress);
+    if (statDisplayed.value >= 32) {
+      statDisplayed.value = 32;
+      statLocked.value = true; // permanently locked
+    }
+  }
 }
 
 /* ─── Mini heatmap cells ─── */
@@ -394,12 +400,83 @@ const miniCells = computed(() => {
 .avatar-stack:hover .avatar:nth-child(2) { transform: translateX(0px);  z-index: 2; }
 .avatar-stack:hover .avatar:nth-child(3) { transform: translateX(6px);  z-index: 1; }
 
+/* ─── Mobile responsive ─── */
 @media (max-width: 1024px) {
   .hero-inner {
     grid-template-columns: 1fr;
-    gap: 60px;
-    padding-top: 120px;
+    gap: 48px;
+    padding-top: 100px;
     padding-bottom: 80px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .hero-left {
+    padding-right: 0;
+    max-width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  .hero-right {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .headline-line-1,
+  .headline-line-2 {
+    font-size: 52px !important;
+  }
+  .stat-large {
+    font-size: 80px;
+  }
+  .stat-label {
+    font-size: 15px;
+  }
+  .hero-left {
+    align-items: flex-start;
+    text-align: left;
+  }
+  .btn-start-free,
+  .btn-see-profile {
+    width: 100%;
+    justify-content: center;
+  }
+  .flex.flex-col.sm\:flex-row {
+    flex-direction: column;
+  }
+  .avatar-stack .avatar {
+    width: 28px;
+    height: 28px;
+  }
+  .mini-grid {
+    grid-template-columns: repeat(12, 8px);
+    grid-template-rows: repeat(7, 8px);
+    width: 118px;
+  }
+  .mini-cell {
+    width: 8px;
+    height: 8px;
+  }
+  .stat-blob {
+    width: 220px;
+    height: 220px;
+  }
+  .streak-pill {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .headline-line-1,
+  .headline-line-2 {
+    font-size: 42px !important;
+  }
+  .stat-large {
+    font-size: 64px;
+  }
+  .hero-inner {
+    padding-top: 88px;
+    gap: 36px;
   }
 }
 </style>
