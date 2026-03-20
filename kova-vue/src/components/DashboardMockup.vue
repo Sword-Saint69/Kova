@@ -2,9 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 
 const pulseCells = computed(() => {
-  const cols = 36;
-  const rows = 7;
-  const result = [];
+  const cols = 36, rows = 7, result = [];
   for (let i = 0; i < cols; i++) {
     const colCells = [];
     for (let j = 0; j < rows; j++) {
@@ -15,6 +13,27 @@ const pulseCells = computed(() => {
   }
   return result;
 });
+
+// Interactive Deep Work checkbox
+const deepWorkDone = ref(false);
+const completionPct = ref(88);
+let pctRaf = null;
+
+function toggleDeepWork() {
+  deepWorkDone.value = !deepWorkDone.value;
+  const target = deepWorkDone.value ? 100 : 88;
+  const start = completionPct.value;
+  const duration = 600;
+  const startTime = performance.now();
+  cancelAnimationFrame(pctRaf);
+  function tick(now) {
+    const t = Math.min((now - startTime) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    completionPct.value = Math.round(start + (target - start) * ease);
+    if (t < 1) pctRaf = requestAnimationFrame(tick);
+  }
+  pctRaf = requestAnimationFrame(tick);
+}
 
 // ANIMATION 20: Dashboard slides up from below on scroll-in
 const mockupEl = ref(null);
@@ -94,9 +113,25 @@ onMounted(() => {
                   <span class="text-sm line-through text-white/30">Read 20 Pages</span>
                   <span class="material-symbols-outlined text-primary text-sm">check_circle</span>
                 </div>
-                <div class="flex items-center justify-between p-3 bg-surface-container-high rounded-lg">
-                  <span class="text-sm text-white/70">Deep Work Session</span>
-                  <div class="w-4 h-4 rounded border border-white/20"></div>
+                <!-- Deep Work row — interactive checkbox -->
+                <div
+                  class="flex items-center justify-between p-3 rounded-lg cursor-pointer deep-work-row"
+                  :class="deepWorkDone ? 'bg-primary/10' : 'bg-surface-container-high'"
+                  @click="toggleDeepWork"
+                >
+                  <span
+                    class="text-sm transition-all duration-300"
+                    :class="deepWorkDone ? 'line-through text-white/30' : 'text-white/70'"
+                  >Deep Work Session</span>
+                  <div
+                    class="check-box"
+                    :class="{ 'check-box--done': deepWorkDone }"
+                  >
+                    <svg v-if="deepWorkDone" width="10" height="8" viewBox="0 0 10 8" fill="none">
+                      <path d="M1 4l3 3 5-6" stroke="#0a0a0a" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" class="check-path"/>
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>
@@ -110,7 +145,9 @@ onMounted(() => {
                   <h4 class="text-2xl font-headline italic font-bold">Productivity Pulse</h4>
                 </div>
                 <div class="text-right">
-                  <p class="text-3xl font-headline font-black text-primary">88%</p>
+                  <p class="text-3xl font-headline font-black text-primary transition-all duration-300">
+                    {{ completionPct }}%
+                  </p>
                   <p class="text-[10px] text-white/40 font-bold">AVG. COMPLETION</p>
                 </div>
               </div>

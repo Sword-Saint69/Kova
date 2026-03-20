@@ -23,6 +23,7 @@ function runSocialCounter() {
 /* ─── Hero stat "32" bloom ─── */
 const statEl = ref(null);
 const statDisplayed = ref(0);
+const statLocked = ref(false);
 function runStatBloom() {
   const target = 32, duration = 800;
   const startTime = performance.now();
@@ -72,8 +73,7 @@ function onRelease() { pressing.value = false; }
 /* ─── ANIMATION: Scroll-jacked stat + Parallax layers ─── */
 const heroEl = ref(null);
 const parallaxHeadline = ref(0);
-const parallaxStat = ref(0);
-const statLocked = ref(false); // once we hit 32, stop going back
+const parallaxStat = ref(0); // once we hit 32, stop going back
 
 function onHeroScroll() {
   const scrollY = window.scrollY;
