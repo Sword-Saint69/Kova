@@ -98,6 +98,7 @@
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthLeftPanel from '../components/AuthLeftPanel.vue';
+import AuthInput from '../components/AuthInput.vue';
 
 const router = useRouter();
 const showPassword = ref(false);
