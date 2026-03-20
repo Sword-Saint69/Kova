@@ -174,6 +174,48 @@ function handleBlur() {
   emit('blur');
 }
 
+function toggleEye() {
+  eyePressing.value = false;
+  showPassword.value = !showPassword.value;
+}
+
+// 18. Password strength logic
+const strengthScore = computed(() => {
+  if (props.type !== 'password' || props.modelValue.length === 0) return 0;
+  let score = 0;
+  const val = props.modelValue;
+  if (val.length > 5) score++;
+  if (val.length > 8) score++;
+  if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  return Math.min(score, 3);
+});
+
+const strengthWidth = computed(() => {
+  if (props.modelValue.length === 0) return '0%';
+  if (strengthScore.value === 1) return '33%';
+  if (strengthScore.value === 2) return '66%';
+  return '100%';
+});
+
+const strengthColor = computed(() => {
+  if (strengthScore.value <= 1) return '#f87171'; // red
+  if (strengthScore.value === 2) return '#fbbf24'; // yellow
+  return '#a0ec06'; // lime
+});
+
+// 15. Error shake
+watch(() => props.error, (newVal) => {
+  if (newVal) {
+    if (inputEl.value) {
+      const parent = inputEl.value.closest('.auth-input-group');
+      parent.classList.remove('shake');
+      void parent.offsetWidth;
+      parent.classList.add('shake');
+    }
+  }
+});
+
 </script>
 
 <style scoped>

@@ -1,6 +1,7 @@
 <template>
   <section 
-    class="hidden lg:flex w-1/2 bg-[#0a0a0a] relative overflow-hidden flex-col justify-between p-16 left-panel-enter"
+    class="flex w-full lg:w-1/2 bg-[#0a0a0a] relative overflow-hidden flex-col justify-between p-8 md:p-16 lg:min-h-screen left-panel-enter lg:sticky lg:top-0 h-auto lg:h-screen z-20"
+    :class="{ 'mobile-collapsed': isScrolled }"
     @mousemove="handleMouseMove"
     @click="handleRipple"
     ref="panelEl"

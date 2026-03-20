@@ -126,19 +126,46 @@ provide('triggerSuccessWipe', () => {
   opacity: 0;
 }
 
+/* 44. "OR" divider draw (expanded outwards) */
+:deep(.divider-draw) {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 0;
+}
+:deep(.divider-draw .line) {
+  height: 1px;
+  flex: 1;
+  background: rgba(255,255,255,0.08);
+  transform: scaleX(0);
+  transition: transform 800ms cubic-bezier(0.16, 1, 0.3, 1) 300ms;
+  transform-origin: center;
+}
+.mounted :deep(.divider-draw .line) {
+  transform: scaleX(1);
+}
+
 /* 30. Form cross-fade with stagger effect */
-/* We apply stagger to standard form rows using child selectors */
 .form-fade-enter-active,
 .form-fade-leave-active {
   transition: opacity 300ms ease, transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .form-fade-enter-from {
   opacity: 0;
-  transform: translateX(12px); /* 29. Register->Login slide vibe */
+  transform: translateX(12px);
 }
 .form-fade-leave-to {
   opacity: 0;
   transform: translateX(-12px);
+}
+
+/* 45 & 49. Mobile tweaks (handled via composition in AuthLeftPanel mainly, 
+   but we ensure the main container allows scrolling) */
+@media (max-width: 1023px) {
+  main {
+    flex-direction: column;
+    overflow-y: auto;
+  }
 }
 
 .cubic-spring {

@@ -48,10 +48,10 @@
       />
 
       <!-- Divider -->
-      <div class="flex items-center gap-4 py-1">
-        <div class="h-px flex-1 bg-white/8"></div>
+      <div class="divider-draw py-1">
+        <div class="line"></div>
         <span class="text-[9px] uppercase tracking-[0.25em] text-white/25 font-body font-bold whitespace-nowrap">OR CONTINUE WITH</span>
-        <div class="h-px flex-1 bg-white/8"></div>
+        <div class="line"></div>
       </div>
 
       <!-- Google OAuth -->
