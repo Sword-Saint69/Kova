@@ -177,21 +177,18 @@ function handleRipple(e) {
 .word-stagger {
   transform: translateY(110%);
   opacity: 0;
-  animation: fade-up-glitch 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--delay) forwards;
+  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--delay) forwards;
 }
 
-/* 3. Headline glitch reveal (incorporated into the fade-up) */
-@keyframes fade-up-glitch {
-  0% { transform: translateY(110%); opacity: 0; clip-path: inset(100% 0 0 0); }
-  40% { transform: translateY(0); opacity: 1; clip-path: inset(0 0 50% 0); transform: translateX(-4px); }
-  60% { clip-path: inset(50% 0 0 0); transform: translateX(2px); }
-  80% { clip-path: inset(0 0 0 0); transform: translateX(-1px); }
-  100% { transform: translateY(0) translateX(0); opacity: 1; clip-path: inset(0 0 0 0); }
+/* 3. Headline clean reveal (replaced glitch) */
+@keyframes fade-up {
+  0% { transform: translateY(110%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
 }
 
 /* 9. "data point." lime glow pulse */
 .glow-pulse {
-  animation: fade-up-glitch 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--delay) forwards,
+  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--delay) forwards,
              text-glow-loop 4s ease-in-out var(--delay) infinite alternate;
 }
 @keyframes text-glow-loop {
