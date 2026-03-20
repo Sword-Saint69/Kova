@@ -1,4 +1,4 @@
-import { createAuthClient } from "@neondatabase/auth/client";
+import { createAuthClient } from "@neondatabase/auth/vanilla";
 
 export const authClient = createAuthClient({
   baseURL: window.location.origin + "/api/auth",
