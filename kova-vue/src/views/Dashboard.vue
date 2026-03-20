@@ -8,7 +8,7 @@
           <RouterLink to="/dashboard" class="text-[#b1ff29] bg-[#b1ff29]/10 rounded-full px-4 py-1.5 font-semibold text-sm font-medium tracking-tight">Dashboard</RouterLink>
           <a class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight" href="#">Habits</a>
           <a class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight" href="#">Analytics</a>
-          <a class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight" href="#">Profile</a>
+          <button @click="handleLogout" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight">Logout</button>
         </div>
         <div class="flex items-center gap-4">
           <button class="text-white/60 hover:bg-white/5 hover:text-white rounded-full p-2 transition-all duration-300">
@@ -212,21 +212,19 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { authClient } from '../utils/auth';
+import sql from '../utils/db';
 
-const user = ref({ name: 'Julian' });
-const habits = ref([
-  { id: 1, name: 'Morning Meditation', completed: true },
-  { id: 2, name: '4km Run', completed: true },
-  { id: 3, name: 'Deep Work Block', completed: true },
-  { id: 4, name: 'Read 20 Pages', completed: false },
-  { id: 5, name: 'No Sugar', completed: false }
-]);
+const router = useRouter();
+const user = ref({ name: 'User' });
+const habits = ref([]);
+const loading = ref(true);
 
-const selectedHabitId = ref(1);
-const topStreak = ref(124);
-const currentStreak = ref(42);
-const totalDays = ref(312);
+const selectedHabitId = ref(null);
+const topStreak = ref(0);
+const currentStreak = ref(0);
+const totalDays = ref(0);
 
 const completedCount = computed(() => habits.value.filter(h => h.completed).length);
 const efficiency = computed(() => habits.value.length ? Math.round((completedCount.value / habits.value.length) * 100) : 0);
@@ -235,11 +233,113 @@ const currentDate = computed(() => {
   return new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'short', day: 'numeric' }).format(new Date());
 });
 
-const toggleHabit = (habit) => {
-  habit.completed = !habit.completed;
+async function fetchDashboardData() {
+  const { data: session } = await authClient.getSession();
+  if (!session) {
+    router.push('/login');
+    return;
+  }
+  
+  user.value = {
+    name: session.user.name || session.user.email.split('@')[0],
+    id: session.user.id
+  };
+
+  try {
+    // Fetch habits from Neon directly
+    let userHabits = await sql`
+      SELECT id, name, icon, color 
+      FROM "Habit" 
+      WHERE "userId" = ${user.value.id}
+      ORDER BY "createdAt" DESC
+    `;
+    
+    // If no habits, create defaults
+    if (userHabits.length === 0) {
+      const defaults = [
+        { name: 'Morning Meditation', icon: 'self_improvement', color: '#b1ff29' },
+        { name: 'Deep Work Block', icon: 'psychology', color: '#b1ff29' },
+        { name: 'Read 20 Pages', icon: 'menu_book', color: '#b1ff29' }
+      ];
+      
+      for (const h of defaults) {
+        await sql`
+          INSERT INTO "Habit" ("name", "icon", "color", "userId") 
+          VALUES (${h.name}, ${h.icon}, ${h.color}, ${user.value.id})
+        `;
+      }
+      
+      // Fetch again after creation
+      userHabits = await sql`
+        SELECT id, name, icon, color 
+        FROM "Habit" 
+        WHERE "userId" = ${user.value.id}
+        ORDER BY "createdAt" DESC
+      `;
+    }
+
+    // Fetch logs for today
+    const today = new Date().toISOString().split('T')[0];
+    const todayLogs = await sql`
+      SELECT "habitId" 
+      FROM "Log" 
+      WHERE "userId" = ${user.value.id} 
+      AND "date"::text LIKE ${today + '%'}
+    `;
+    
+    const completedIds = new Set(todayLogs.map(l => l.habitId));
+    
+    habits.value = userHabits.map(h => ({
+      ...h,
+      completed: completedIds.has(h.id)
+    }));
+
+    if (habits.value.length > 0) {
+      selectedHabitId.value = habits.value[0].id;
+    }
+
+    // Basic stats calculation
+    const logCount = await sql`SELECT count(DISTINCT "date"::date) FROM "Log" WHERE "userId" = ${user.value.id}`;
+    totalDays.value = parseInt(logCount[0].count) || 0;
+    
+  } catch (error) {
+    console.error("Dashboard fetch error:", error);
+  } finally {
+    loading.value = false;
+  }
+}
+
+const handleLogout = async () => {
+  await authClient.signOut();
+  router.push('/login');
+};
+
+const toggleHabit = async (habit) => {
+  const newState = !habit.completed;
+  habit.completed = newState; // Optimistic update
+  
+  try {
+    if (newState) {
+      await sql`
+        INSERT INTO "Log" ("userId", "habitId", "date", "status") 
+        VALUES (${user.value.id}, ${habit.id}, NOW(), 'COMPLETED')
+      `;
+    } else {
+      await sql`
+        DELETE FROM "Log" 
+        WHERE "userId" = ${user.value.id} 
+        AND "habitId" = ${habit.id} 
+        AND "date"::date = CURRENT_DATE
+      `;
+    }
+  } catch (error) {
+    console.error("Habit toggle error:", error);
+    habit.completed = !newState; // Rollback
+  }
 };
 
 const getHeatmapColor = (n) => {
+  // Mocking heatmap for now since we don't have historical data yet
   const rand = Math.random();
   if (rand < 0.3) return 'bg-surface-container-highest';
   if (rand < 0.6) return 'bg-primary/40';
@@ -247,7 +347,9 @@ const getHeatmapColor = (n) => {
 };
 
 const calendarDays = ref([]);
-onMounted(() => {
+onMounted(async () => {
+  await fetchDashboardData();
+  
   // Simple calendar generation for October
   for (let i = 26; i <= 30; i++) calendarDays.value.push({ d: i, current: false });
   for (let i = 1; i <= 31; i++) calendarDays.value.push({ d: i, current: true, today: i === 24 });
