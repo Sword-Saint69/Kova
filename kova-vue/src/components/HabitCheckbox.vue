@@ -7,6 +7,7 @@
     <div class="habit-dot" :style="{ background: color }" />
 
     <div class="checkbox" :class="{ checked }">
+      <!-- ANIMATION 3: SVG checkmark draws itself via stroke-dashoffset -->
       <svg
         v-if="checked"
         width="10" height="8" viewBox="0 0 10 8"
@@ -69,15 +70,27 @@ function toggle() {
   background-color: #a0ec06;
   border-color: #a0ec06;
   /* Spring bounce on check */
-  animation: check-spring 280ms var(--ease-spring);
+  animation: check-spring 280ms var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
 }
 
-/* ── Checkmark stroke draw ── */
+@keyframes check-spring {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(0.75); }
+  60%  { transform: scale(1.15); }
+  80%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* ANIMATION 3 — Checkmark stroke draws itself */
 .check-path {
-  stroke-dasharray:  14;
+  stroke-dasharray: 14;
   stroke-dashoffset: 14;
-  animation: stroke-draw 200ms ease forwards;
+  animation: stroke-draw 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: 60ms; /* starts after box fills */
+}
+
+@keyframes stroke-draw {
+  to { stroke-dashoffset: 0; }
 }
 
 /* ── Name dimming ── */
