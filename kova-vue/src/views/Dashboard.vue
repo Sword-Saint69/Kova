@@ -220,6 +220,7 @@ const router = useRouter();
 const user = ref({ name: 'User' });
 const habits = ref([]);
 const loading = ref(true);
+const error = ref(null);
 
 const selectedHabitId = ref(null);
 const topStreak = ref(0);
@@ -234,18 +235,28 @@ const currentDate = computed(() => {
 });
 
 async function fetchDashboardData() {
-  const { data: session } = await authClient.getSession();
-  if (!session) {
-    router.push('/login');
-    return;
-  }
+  loading.value = true;
   
-  user.value = {
-    name: session.user.name || session.user.email.split('@')[0],
-    id: session.user.id
-  };
-
   try {
+    // Try to get session with a small retry to handle race conditions after login
+    let sessionResult = await authClient.getSession();
+    
+    if (!sessionResult.data) {
+      await new Promise(r => setTimeout(r, 1000));
+      sessionResult = await authClient.getSession();
+    }
+    
+    const session = sessionResult.data;
+    if (!session) {
+      router.push('/login');
+      return;
+    }
+  
+    user.value = {
+      name: session.user.name || session.user.email.split('@')[0],
+      id: session.user.id
+    };
+
     // Fetch habits from Neon directly
     let userHabits = await sql`
       SELECT id, name, icon, color 
@@ -302,8 +313,8 @@ async function fetchDashboardData() {
     const logCount = await sql`SELECT count(DISTINCT "date"::date) FROM "Log" WHERE "userId" = ${user.value.id}`;
     totalDays.value = parseInt(logCount[0].count) || 0;
     
-  } catch (error) {
-    console.error("Dashboard fetch error:", error);
+  } catch (err) {
+    console.error("Dashboard fetch error:", err);
   } finally {
     loading.value = false;
   }
