@@ -186,7 +186,6 @@ onMounted(() => {
   </section>
 </template>
 <style>
-/* ANIMATION 20 — Dashboard mockup slides up from below */
 .mockup-reveal {
   opacity: 0;
   transform: translateY(48px);
@@ -197,4 +196,35 @@ onMounted(() => {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Interactive Deep Work checkbox */
+.deep-work-row {
+  transition: background-color 250ms ease;
+}
+.check-box {
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+.check-box--done {
+  background-color: #a0ec06;
+  border-color: #a0ec06;
+  animation: check-spring 280ms cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes check-spring {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(0.75); }
+  60%  { transform: scale(1.15); }
+  80%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.check-path {
+  stroke-dasharray: 14;
+  stroke-dashoffset: 14;
+  animation: stroke-draw 200ms cubic-bezier(0.16,1,0.3,1) 60ms forwards;
+}
+@keyframes stroke-draw { to { stroke-dashoffset: 0; } }
 </style>
