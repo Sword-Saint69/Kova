@@ -5,14 +5,14 @@ import Heatmap from './Heatmap.vue';
 <template>
   <section class="hero-section relative w-full bg-[#0a0a0a] overflow-hidden">
 
-    <div class="hero-grid relative z-10 max-w-7xl mx-auto px-8 w-full">
+    <div class="hero-grid relative z-10">
         <!-- Left Side -->
         <div class="hero-left">
             <div class="space-y-4">
                 <span class="block text-[11px] font-medium uppercase tracking-[0.15em] text-primary/60">HABIT ENGINEERING</span>
                 <h1 class="font-headline font-black leading-[0.9] tracking-tighter">
-                    <span class="text-[#f0ede8] italic block text-[76px]">Your life,</span>
-                    <span class="text-primary block text-[76px]">in squares.</span>
+                    <span class="text-[#f0ede8] italic block text-[72px]">Your life,</span>
+                    <span class="text-primary block text-[72px]">in squares.</span>
                 </h1>
             </div>
             
@@ -23,12 +23,12 @@ import Heatmap from './Heatmap.vue';
 
             <div class="flex flex-col sm:flex-row items-center gap-4">
                 <!-- Primary Button (10px rounded rect) -->
-                <button class="h-[52px] px-[24px] bg-[#a0ec06] text-[#0a0a0a] font-body font-semibold text-[15px] rounded-[10px] flex items-center gap-2 hover:bg-[#b8f520] transition-all">
+                <button class="btn-primary flex items-center gap-2 hover:bg-[#b8f520] transition-all">
                     Start for free <span class="material-symbols-outlined">arrow_forward</span>
                 </button>
                 
                 <!-- Ghost Button (10px rounded rect) -->
-                <button class="h-[52px] px-[20px] border-[0.5px] border-white/13 text-[#f0ede8]/55 font-body font-normal text-[14px] rounded-[10px] hover:bg-white/5 hover:border-white/20 hover:text-[#f0ede8] transition-all">
+                <button class="btn-ghost-hero transition-all">
                     See a live profile
                 </button>
             </div>
@@ -77,23 +77,56 @@ import Heatmap from './Heatmap.vue';
 
 .hero-grid {
   display: grid;
-  grid-template-columns: 1fr max-content;
-  gap: 40px;
+  grid-template-columns: 52% 48%;
   align-items: center;
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 28px;
 }
 
 .hero-left {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  max-width: 560px;
+  padding-right: 60px;
 }
 
 .hero-right {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: flex-start;
   overflow: visible;
+}
+
+.btn-primary {
+  border-radius: 10px;
+  height: 52px;
+  background: #a0ec06;
+  color: #0a0a0a;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 0 24px;
+}
+
+.btn-ghost-hero {
+  border-radius: 10px;
+  height: 52px;
+  padding: 0 20px;
+  border: 0.5px solid rgba(255,255,255,0.13);
+  color: rgba(240,237,232,0.55);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  background: transparent;
+}
+.btn-ghost-hero:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.2);
+  color: #f0ede8;
 }
 
 @media (max-width: 1024px) {

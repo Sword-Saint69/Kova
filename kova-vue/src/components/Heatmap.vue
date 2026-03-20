@@ -31,22 +31,25 @@ const cells = computed(() => {
     
     // Exact weighting spec:
     const random = Math.random();
-    if (col >= 0 && col <= 15) { // Jan-Mar: 80% level 0, 15% level 1, 5% level 2
-      if (random < 0.8) level = 0;
+    if (col >= 0 && col <= 15) { // Jan-Mar: 80% empty, rest levels 1-2
+      if (random < 0.80) level = 0;
       else if (random < 0.95) level = 1;
       else level = 2;
-    } else if (col >= 16 && col <= 30) { // Apr-Jun: 45% level 0, 30% level 1-2, 25% level 3
-      if (random < 0.45) level = 0;
-      else if (random < 0.75) level = Math.random() < 0.5 ? 1 : 2;
+    } else if (col >= 16 && col <= 30) { // Apr-Jun: 40% empty, 60% levels 1-3
+      if (random < 0.40) level = 0;
+      else if (random < 0.60) level = 1;
+      else if (random < 0.80) level = 2;
       else level = 3;
-    } else if (col >= 31 && col <= 43) { // Jul-Aug: 25% level 0, 35% level 2-3, 40% level 4
-      if (random < 0.25) level = 0;
-      else if (random < 0.60) level = Math.random() < 0.5 ? 2 : 3;
+    } else if (col >= 31 && col <= 43) { // Jul-Aug: 20% empty, 80% levels 2-4
+      if (random < 0.20) level = 0;
+      else if (random < 0.45) level = 2;
+      else if (random < 0.70) level = 3;
       else level = 4;
-    } else if (col >= 44 && col <= 51) { // Sep-Oct: 10% level 0, 20% level 3, 70% level 4-5
-      if (random < 0.10) level = 0;
+    } else if (col >= 44 && col <= 51) { // Sep-Oct: 8% empty, 70% levels 4-5
+      if (random < 0.08) level = 0;
       else if (random < 0.30) level = 3;
-      else level = Math.random() < 0.5 ? 4 : 5;
+      else if (random < 0.65) level = 4;
+      else level = 5;
     }
 
     result.push({
