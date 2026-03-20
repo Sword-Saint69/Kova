@@ -15,20 +15,20 @@ import Heatmap from './Heatmap.vue';
     </div>
     <!-- Tile 2: Build -->
     <div class="bg-primary p-8 rounded-2xl flex flex-col justify-between relative overflow-hidden border border-primary/20 tile-hover" :style="{ '--i': 1 }" key="2">
-      <svg class="absolute top-4 right-4 text-on-primary-container opacity-20 w-8 h-8" fill="currentColor" viewbox="0 0 24 24">
+      <svg class="absolute top-4 right-4 text-[#0a0a0a] opacity-20 w-8 h-8" fill="currentColor" viewbox="0 0 24 24">
         <path d="M12 0L13.8 8.2L22 10L13.8 11.8L12 20L10.2 11.8L2 10L10.2 8.2L12 0Z"></path>
       </svg>
-      <svg class="absolute bottom-20 left-6 text-on-primary-container opacity-20 w-6 h-6" fill="currentColor" viewbox="0 0 24 24">
+      <svg class="absolute bottom-20 left-6 text-[#0a0a0a] opacity-20 w-6 h-6" fill="currentColor" viewbox="0 0 24 24">
         <path d="M12 0L13.8 8.2L22 10L13.8 11.8L12 20L10.2 11.8L2 10L10.2 8.2L12 0Z"></path>
       </svg>
       <div>
-        <h3 class="text-on-primary-container text-xs font-bold tracking-[0.2em] mb-4 uppercase">Build</h3>
+        <h3 class="text-[#0a0a0a] text-xs font-bold tracking-[0.2em] mb-4 uppercase">Build</h3>
         <div class="flex flex-col">
-          <span class="text-[88px] font-headline font-[900] leading-none text-on-primary-container">32</span>
-          <span class="text-on-primary-container text-[14px] font-medium uppercase tracking-wider -mt-2">days in a row</span>
+          <span class="text-[88px] font-headline font-[900] leading-none text-[#0a0a0a]">32</span>
+          <span class="text-[#0a0a0a] text-[14px] font-medium uppercase tracking-wider -mt-2">days in a row</span>
         </div>
       </div>
-      <p class="text-on-primary-container font-medium text-sm mt-8">Your streak. Your record.</p>
+      <p class="text-[#0a0a0a] font-medium text-sm mt-8">Your streak. Your record.</p>
     </div>
     <!-- Tile 3: Share -->
     <div class="bg-surface-container-low p-8 rounded-2xl flex flex-col justify-between group border border-[#a0ec0633] tile-hover" :style="{ '--i': 2 }" key="3">
