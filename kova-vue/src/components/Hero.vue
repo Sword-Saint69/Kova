@@ -1,5 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 /* ─── Social proof counter ─── */
 const counterEl = ref(null);
@@ -146,6 +148,7 @@ const miniCells = computed(() => {
                   @mousedown="onPress"
                   @mouseup="onRelease"
                   @mouseleave="onRelease"
+                  @click="router.push('/login')"
                 >
                     Start for free <span class="material-symbols-outlined">arrow_forward</span>
                 </button>

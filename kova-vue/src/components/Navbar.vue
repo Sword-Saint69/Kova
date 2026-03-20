@@ -20,7 +20,7 @@
       </div>
 
       <!-- ANIMATION 6: Get Started shimmer -->
-      <button class="btn-get-started" @click.prevent>
+      <button class="btn-get-started" @click="router.push('/login')">
         Get Started <span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">arrow_forward</span>
       </button>
     </div>
@@ -29,6 +29,9 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const links = [
   { id: 'features',     label: 'Features' },
