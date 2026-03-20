@@ -5,15 +5,25 @@
     @click="handleRipple"
     ref="panelEl"
   >
-    <!-- 7. Lime noise grain -->
-    <div class="absolute inset-0 pointer-events-none opacity-[0.03] z-0 mix-blend-overlay">
-      <svg width="100%" height="100%">
-        <filter id="noise">
-          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/>
-          <feColorMatrix type="matrix" values="0 0 0 0 0.63  0 0 0 0 0.92  0 0 0 0 0.02  0 0 0 1 0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#noise)"/>
-      </svg>
+    <!-- 38. Noise grain overlay (Animated) -->
+    <div class="absolute inset-0 pointer-events-none opacity-[0.04] z-0 mix-blend-overlay noise-anim"></div>
+
+    <!-- 35. Lime ambient blob -->
+    <div class="absolute w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full -top-40 -left-40 animate-blob pointer-events-none"></div>
+    <div class="absolute w-[400px] h-[400px] bg-primary/10 blur-[100px] rounded-full bottom-20 right-0 animate-blob-reverse pointer-events-none"></div>
+
+    <!-- 39. Mouse-tracked light -->
+    <div 
+      class="absolute inset-0 pointer-events-none z-0 transition-opacity duration-1000"
+      :style="{
+        background: `radial-gradient(600px circle at ${mouseX + panelWidth/2}px ${mouseY + panelHeight/2}px, rgba(160,236,6,0.08), transparent 80%)`,
+        opacity: isMouseIn ? 1 : 0
+      }"
+    ></div>
+
+    <!-- 37. Scanline sweep -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-[0.03]">
+      <div class="scanline"></div>
     </div>
 
     <!-- 1. Dot-grid parallax -->
@@ -25,7 +35,17 @@
         opacity: 0.18,
         transform: `translate(${mouseX * -0.02}px, ${mouseY * -0.02}px)`
       }"
-    ></div>
+    >
+      <!-- 36. Grid cell highlight (Random flashes) -->
+      <div v-for="h in highlights" :key="h.id" 
+           class="absolute w-[2px] h-[2px] bg-primary shadow-[0_0_8px_#a0ec06] rounded-full transition-opacity duration-500"
+           :style="{ left: h.x + 'px', top: h.y + 'px', opacity: h.opacity }"></div>
+    </div>
+
+    <!-- 47. Cursor trail -->
+    <div v-for="p in trail" :key="p.id" 
+         class="absolute w-1.5 h-1.5 bg-primary/40 rounded-full pointer-events-none z-10"
+         :style="{ left: p.x + 'px', top: p.y + 'px', transform: 'scale(' + p.scale + ')', opacity: p.opacity }"></div>
 
     <!-- 6. Dot grid ripple effect -->
     <div 
@@ -80,46 +100,87 @@
 
     <!-- Step indicators -->
     <div class="relative z-10 flex flex-col gap-3">
-      <!-- 8. Step indicator fill -->
+      <!-- 8/33. Step indicator + line fill -->
       <div class="flex items-center gap-2">
-        <div class="h-1.5 w-10 bg-white/20 rounded-full relative overflow-hidden">
-             <div class="absolute inset-y-0 left-0 bg-primary w-full step-fill" style="--delay: 800ms"></div>
+        <div class="h-1.5 w-10 bg-white/10 rounded-full relative overflow-hidden">
+             <div class="absolute inset-y-0 left-0 bg-primary w-full transition-transform duration-700 ease-[cubic-bezier(0.87,0,0.13,1)]" :style="{ transform: step >= 1 ? 'translateX(0)' : 'translateX(-100%)' }"></div>
         </div>
-        <div class="h-1.5 w-10 bg-white/20 rounded-full relative overflow-hidden">
-             <div class="absolute inset-y-0 left-0 bg-primary w-full step-fill" :style="{ '--delay': step === 2 ? '1000ms' : '0ms', transform: step === 2 ? '' : 'translateX(-100%)' }"></div>
-             <!-- For register, step 2 is empty. For login, step 2 fills. -->
-             <div v-if="step === 1" class="absolute inset-y-0 left-0 bg-primary w-full" style="transform: translateX(-100%)"></div>
+        <div class="h-1.5 w-10 bg-white/10 rounded-full relative overflow-hidden">
+             <div class="absolute inset-y-0 left-0 bg-primary w-full transition-transform duration-700 ease-[cubic-bezier(0.87,0,0.13,1)]" :style="{ transform: step >= 2 ? 'translateX(0)' : 'translateX(-100%)' }"></div>
         </div>
-        <div class="h-2 w-2 bg-white/20 rounded-full"></div>
+        <div class="h-2 w-2 rounded-full transition-colors duration-500" :class="step >= 3 ? 'bg-primary shadow-[0_0_10px_#a0ec06]' : 'bg-white/10'"></div>
       </div>
       <p class="text-[10px] font-body uppercase tracking-widest text-white/30 font-medium delay-fade" style="--delay: 900ms;">
-        Account <span class="mx-1 opacity-40">·</span> Habits <span class="mx-1 opacity-40">·</span> Profile
+        Account <span class="mx-1 opacity-40 transition-colors" :class="{ 'text-primary': step >= 2 }">·</span> Habits <span class="mx-1 opacity-40 transition-colors" :class="{ 'text-primary': step >= 3 }">·</span> Profile
       </p>
     </div>
   </section>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
-    step: {
-        type: Number,
-        default: 1
-    }
+  step: { type: Number, default: 1 }
 });
 
 const panelEl = ref(null);
+const panelWidth = ref(0);
+const panelHeight = ref(0);
 const mouseX = ref(0);
 const mouseY = ref(0);
+const isMouseIn = ref(false);
 const ripples = ref([]);
+const highlights = ref([]);
+const trail = ref([]);
 let rippleId = 0;
+let highlightId = 0;
+let trailId = 0;
 
 function handleMouseMove(e) {
   if (!panelEl.value) return;
+  isMouseIn.value = true;
   const rect = panelEl.value.getBoundingClientRect();
-  mouseX.value = e.clientX - rect.left - (rect.width / 2);
-  mouseY.value = e.clientY - rect.top - (rect.height / 2);
+  panelWidth.value = rect.width;
+  panelHeight.value = rect.height;
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  mouseX.value = x - (rect.width / 2);
+  mouseY.value = y - (rect.height / 2);
+
+  // 47. Cursor trail
+  const id = trailId++;
+  trail.value.push({ id, x, y, scale: 1, opacity: 0.8 });
+  if (trail.value.length > 20) trail.value.shift();
+}
+
+function updateTrail() {
+  trail.value.forEach(p => {
+    p.scale *= 0.85;
+    p.opacity *= 0.85;
+  });
+  trail.value = trail.value.filter(p => p.opacity > 0.05);
+  requestAnimationFrame(updateTrail);
+}
+
+// 36. Grid cell highlight logic
+function triggerHighlight() {
+  if (!panelEl.value) return;
+  const id = highlightId++;
+  // Snap to grid coordinates (bg-size 28px)
+  const x = Math.floor(Math.random() * (panelWidth.value / 28)) * 28 + 1;
+  const y = Math.floor(Math.random() * (panelHeight.value / 28)) * 28 + 1;
+  
+  highlights.value.push({ id, x, y, opacity: 1 });
+  
+  setTimeout(() => {
+    const h = highlights.value.find(h => h.id === id);
+    if (h) h.opacity = 0;
+    setTimeout(() => {
+      highlights.value = highlights.value.filter(h => h.id !== id);
+    }, 500);
+  }, 1000);
+
+  setTimeout(triggerHighlight, 1000 + Math.random() * 2000);
 }
 
 function handleRipple(e) {
@@ -127,19 +188,63 @@ function handleRipple(e) {
   const rect = panelEl.value.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
-  
   const id = rippleId++;
   ripples.value.push({ id, x, y });
-  
-  // Remove ripple after animation completes
   setTimeout(() => {
     ripples.value = ripples.value.filter(r => r.id !== id);
   }, 1000);
 }
 
+onMounted(() => {
+  requestAnimationFrame(updateTrail);
+  triggerHighlight();
+});
 </script>
 
 <style scoped>
+/* 38. Noise grain overlay (Animated) */
+.noise-anim {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  animation: grain 1s steps(2) infinite;
+}
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-1%, -1%); }
+  30% { transform: translate(1%, -1%); }
+  50% { transform: translate(-1%, 1%); }
+  70% { transform: translate(1%, 1%); }
+  90% { transform: translate(-1%, -1%); }
+}
+
+/* 35. Ambient Blobs */
+.animate-blob {
+  animation: blob-float 15s infinite alternate ease-in-out;
+}
+.animate-blob-reverse {
+  animation: blob-float-reverse 12s infinite alternate ease-in-out;
+}
+@keyframes blob-float {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, 40px) scale(1.1); }
+}
+@keyframes blob-float-reverse {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-30px, -20px) scale(1.05); }
+}
+
+/* 37. Scanline sweep */
+.scanline {
+  position: absolute;
+  top: -100px; left: 0; right: 0;
+  height: 100px;
+  background: linear-gradient(to bottom, transparent, #a0ec06, transparent);
+  animation: scan 8s linear infinite;
+}
+@keyframes scan {
+  from { transform: translateY(0); }
+  to { transform: translateY(120vh); }
+}
+
 /* 10. Left panel slide-in */
 .left-panel-enter {
   animation: panel-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -180,7 +285,7 @@ function handleRipple(e) {
   animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--delay) forwards;
 }
 
-/* 3. Headline clean reveal (replaced glitch) */
+/* 3. Headline clean reveal */
 @keyframes fade-up {
   0% { transform: translateY(110%); opacity: 0; }
   100% { transform: translateY(0); opacity: 1; }
@@ -205,14 +310,4 @@ function handleRipple(e) {
 @keyframes simple-fade-up {
   to { opacity: 1; transform: translateY(0); }
 }
-
-/* 8. Step indicator fill */
-.step-fill {
-  transform: translateX(-100%);
-  animation: progress-fill 0.8s cubic-bezier(0.87, 0, 0.13, 1) var(--delay) forwards;
-}
-@keyframes progress-fill {
-  to { transform: translateX(0); }
-}
-
 </style>
