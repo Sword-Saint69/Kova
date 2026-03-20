@@ -33,6 +33,8 @@
            <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#a0ec06" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-path"/>
         </svg>
         
+      <!-- 34. Eye toggle spring (Passwords only) -->
+      <div v-if="type === 'password'" class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
         <!-- 40. Caps Lock warning -->
         <transition name="fade">
           <div v-if="isCapsLockOn && isFocused && type === 'password'" 
@@ -42,9 +44,7 @@
           </div>
         </transition>
 
-        <!-- 34. Eye toggle spring (Passwords only) -->
         <button
-          v-if="type === 'password'"
           type="button"
           class="eye-toggle text-primary/60 hover:text-primary transition-colors focus:outline-none"
           :class="{ 'spring-press': eyePressing }"
@@ -55,9 +55,6 @@
           <span class="material-symbols-outlined text-[18px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
         </button>
       </div>
-
-      <!-- 43. Form field ripple overlay -->
-      <div v-for="r in ripples" :key="r.id" class="input-ripple" :style="{ left: r.x + 'px', top: r.y + 'px' }"></div>
 
       <!-- 41. Paste confetti container -->
       <div class="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
@@ -109,9 +106,7 @@ const eyePressing = ref(false);
 const isCapsLockOn = ref(false);
 const isFirstFocus = ref(false);
 const hasFocusedEver = ref(false);
-const ripples = ref([]);
 const confetti = ref([]);
-let rippleId = 0;
 let confettiId = 0;
 
 const inputType = computed(() => {
@@ -126,18 +121,6 @@ const showCheckmark = computed(() => props.isValid && !props.error && props.mode
 // 40. Caps Lock Detection
 function checkCapsLock(e) {
   isCapsLockOn.value = e.getModifierState('CapsLock');
-}
-
-// 43. Input Ripple
-function handleInputClick(e) {
-  const rect = e.currentTarget.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  const id = rippleId++;
-  ripples.value.push({ id, x, y });
-  setTimeout(() => {
-    ripples.value = ripples.value.filter(r => r.id !== id);
-  }, 600);
 }
 
 // 41. Paste Confetti
