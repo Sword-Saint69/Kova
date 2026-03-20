@@ -1,14 +1,14 @@
 <script setup>
-import Navbar from './components/Navbar.vue';
-import Hero from './components/Hero.vue';
-import BentoGrid from './components/BentoGrid.vue';
-import DashboardMockup from './components/DashboardMockup.vue';
-import Process from './components/Process.vue';
-import Testimonials from './components/Testimonials.vue';
-import Pricing from './components/Pricing.vue';
-import CtaBanner from './components/CtaBanner.vue';
-import Footer from './components/Footer.vue';
-import ScrollProgress from './components/ScrollProgress.vue';
+import Navbar from '../components/Navbar.vue';
+import Hero from '../components/Hero.vue';
+import BentoGrid from '../components/BentoGrid.vue';
+import DashboardMockup from '../components/DashboardMockup.vue';
+import Process from '../components/Process.vue';
+import Testimonials from '../components/Testimonials.vue';
+import Pricing from '../components/Pricing.vue';
+import CtaBanner from '../components/CtaBanner.vue';
+import Footer from '../components/Footer.vue';
+import ScrollProgress from '../components/ScrollProgress.vue';
 </script>
 
 <template>
