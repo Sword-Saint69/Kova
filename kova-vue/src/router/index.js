@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Landing from '../App.vue';
 
 const routes = [
   { path: '/',         component: () => import('../views/Landing.vue')  },
