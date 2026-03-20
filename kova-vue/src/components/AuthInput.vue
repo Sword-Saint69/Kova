@@ -1,0 +1,330 @@
+<template>
+  <div class="auth-input-group" :class="{ 'has-error': error, 'is-focused': isFocused, 'has-value': modelValue.length > 0 }">
+    <!-- 12. Label float up -->
+    <label class="auth-label">{{ label }}</label>
+    
+    <div class="relative w-full">
+      <!-- 11. Input focus border draw -->
+      <svg class="border-draw" width="100%" height="100%" preserveAspectRatio="none">
+        <rect class="border-rect" x="0" y="0" width="100%" height="100%" rx="12"></rect>
+      </svg>
+      
+      <input
+        :value="modelValue"
+        @input="$emit('update:modelValue', $event.target.value)"
+        :type="inputType"
+        :placeholder="placeholder"
+        class="auth-input"
+        @focus="handleFocus"
+        @blur="handleBlur"
+        ref="inputEl"
+      />
+      
+      <!-- 14. Custom placeholder for slide-out animation -->
+      <span class="custom-placeholder pointer-events-none">{{ placeholder }}</span>
+      
+      <!-- Rightside Icons -->
+      <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
+        <!-- 17. Field success checkmark -->
+        <svg v-if="showCheckmark" class="success-check" width="14" height="14" viewBox="0 0 14 14" fill="none">
+           <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#a0ec06" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-path"/>
+        </svg>
+        
+        <!-- 19. Eye toggle spring (Passwords only) -->
+        <button
+          v-if="type === 'password'"
+          type="button"
+          class="eye-toggle text-primary/60 hover:text-primary transition-colors focus:outline-none"
+          :class="{ 'spring-press': eyePressing }"
+          @mousedown="eyePressing = true"
+          @mouseup="toggleEye"
+          @mouseleave="eyePressing = false"
+        >
+          <span class="material-symbols-outlined text-[18px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="flex items-start justify-between mt-1.5 px-0.5">
+      <!-- 16. Error message slide in -->
+      <transition name="error-slide">
+        <p v-if="error" class="error-msg text-[11px] text-red-400 m-0">{{ error }}</p>
+      </transition>
+      
+      <!-- 20. Character counter -->
+      <transition name="fade">
+        <p v-if="isFocused && type === 'password'" class="char-count text-[10px] text-white/30 font-body m-0 ml-auto">
+          {{ modelValue.length }} chars
+        </p>
+      </transition>
+    </div>
+    
+    <!-- 18. Password strength bar -->
+    <div v-if="type === 'password'" class="strength-meter mt-2">
+       <div class="strength-bar" :style="{ width: strengthWidth, backgroundColor: strengthColor }"></div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, watch } from 'vue';
+
+const props = defineProps({
+  modelValue: { type: String, default: '' },
+  label: { type: String, required: true },
+  type: { type: String, default: 'text' },
+  placeholder: { type: String, default: '' },
+  error: { type: String, default: '' },
+  isValid: { type: Boolean, default: false } // Trigger checkmark
+});
+
+const emit = defineEmits(['update:modelValue', 'blur', 'focus']);
+
+const inputEl = ref(null);
+const isFocused = ref(false);
+
+const showPassword = ref(false);
+const eyePressing = ref(false);
+
+const inputType = computed(() => {
+  if (props.type === 'password') {
+    return showPassword.value ? 'text' : 'password';
+  }
+  return props.type;
+});
+
+const showCheckmark = computed(() => props.isValid && !props.error && props.modelValue.length > 0 && props.type !== 'password');
+
+function handleFocus() {
+  isFocused.value = true;
+  emit('focus');
+}
+
+function handleBlur() {
+  isFocused.value = false;
+  emit('blur');
+}
+
+function toggleEye() {
+  eyePressing.value = false;
+  showPassword.value = !showPassword.value;
+}
+
+// 18. Password strength logic
+const strengthScore = computed(() => {
+  if (props.type !== 'password' || props.modelValue.length === 0) return 0;
+  let score = 0;
+  const val = props.modelValue;
+  if (val.length > 5) score++;
+  if (val.length > 8) score++;
+  if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  return Math.min(score, 3);
+});
+
+const strengthWidth = computed(() => {
+  if (props.modelValue.length === 0) return '0%';
+  if (strengthScore.value === 1) return '33%';
+  if (strengthScore.value === 2) return '66%';
+  return '100%';
+});
+
+const strengthColor = computed(() => {
+  if (strengthScore.value <= 1) return '#f87171'; // red
+  if (strengthScore.value === 2) return '#fbbf24'; // yellow
+  return '#a0ec06'; // lime
+});
+
+// 15. Error shake
+// Adding the shake class when error becomes truthy
+watch(() => props.error, (newVal) => {
+  if (newVal) {
+    if (inputEl.value) {
+      const parent = inputEl.value.closest('.auth-input-group');
+      parent.classList.remove('shake');
+      // Trigger reflow
+      void parent.offsetWidth;
+      parent.classList.add('shake');
+    }
+  }
+});
+</script>
+
+<style scoped>
+.auth-input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 12. Label float up */
+.auth-label {
+  position: absolute;
+  left: 17px;
+  top: 15px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.4);
+  font-family: 'DM Sans', sans-serif;
+  pointer-events: none;
+  transform-origin: left top;
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), 
+              color 300ms ease, opacity 300ms ease;
+  z-index: 10;
+}
+.is-focused .auth-label,
+.has-value .auth-label {
+  transform: translateY(-26px) scale(0.75);
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.is-focused .auth-label {
+  color: #a0ec06;
+}
+
+/* Input Base */
+.auth-input {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid transparent; /* Replaced by border draw */
+  border-radius: 12px;
+  padding: 14px 16px;
+  padding-right: 48px;
+  color: white;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  position: relative;
+  z-index: 1;
+  /* Hide native placeholder */
+}
+.auth-input::placeholder { color: transparent; }
+
+/* 13. Input glow expand */
+.auth-input {
+  box-shadow: 0 0 0px 0px rgba(160,236,6,0);
+  transition: box-shadow 400ms cubic-bezier(0.16, 1, 0.3, 1), background-color 300ms ease;
+}
+.is-focused .auth-input {
+  background: #111111;
+  box-shadow: 0 0 0px 1px #a0ec06, 0 0 20px rgba(160,236,6,0.15);
+}
+
+/* 11. Input focus border draw */
+.border-draw {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  border-radius: 12px;
+  z-index: 2;
+  overflow: visible;
+}
+.border-rect {
+  fill: none;
+  stroke: #a0ec06;
+  stroke-width: 2;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  transition: stroke-dashoffset 600ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+.is-focused .border-rect {
+  stroke-dashoffset: 0;
+}
+/* Base border when not focused */
+.auth-input-group::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50px; /* match input height */
+  border: 0.5px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  pointer-events: none;
+  z-index: 0;
+  transition: border-color 300ms ease;
+}
+.has-error::before {
+  border-color: rgba(248,113,113,0.5) !important;
+}
+
+/* 14. Placeholder slide out */
+.custom-placeholder {
+  position: absolute;
+  left: 17px;
+  top: 15px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.12);
+  font-family: 'DM Sans', sans-serif;
+  transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease;
+  z-index: 5;
+}
+.is-focused .custom-placeholder,
+.has-value .custom-placeholder {
+  transform: translateX(-10px);
+  opacity: 0;
+}
+
+/* 15. Error shake */
+.shake {
+  animation: shake-anim 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+@keyframes shake-anim {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+/* 16. Error message slide in */
+.error-slide-enter-active,
+.error-slide-leave-active {
+  transition: opacity 300ms ease, transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.error-slide-enter-from,
+.error-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* 17. Field success checkmark */
+.check-path {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: draw-check 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes draw-check {
+  to { stroke-dashoffset: 0; }
+}
+
+/* 18. Password strength bar */
+.strength-meter {
+  height: 3px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 2px;
+  overflow: hidden;
+  position: absolute;
+  bottom: -8px;
+  left: 0; right: 0;
+}
+.strength-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 400ms cubic-bezier(0.16, 1, 0.3, 1), background-color 400ms ease;
+}
+
+/* 19. Eye toggle spring */
+.eye-toggle {
+  transition: transform 150ms cubic-bezier(0.34, 1.56, 0.64, 1), color 200ms ease;
+}
+.eye-toggle.spring-press {
+  transform: scale(0.8);
+}
+
+/* 20. Character counter fade */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 300ms ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
