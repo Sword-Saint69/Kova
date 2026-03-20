@@ -20,43 +20,31 @@
 
         <form class="space-y-5" @submit.prevent="handleSubmit">
           <!-- Email -->
-          <div class="space-y-1.5">
-            <label class="text-[10px] uppercase tracking-[0.22em] font-body font-medium text-white/40 ml-0.5">Email Address</label>
-            <input
-              v-model="form.email"
-              type="email"
-              placeholder="name@domain.com"
-              class="form-input"
-              :class="{ 'form-input--error': errors.email }"
-              @blur="validate('email')"
-            />
-            <p v-if="errors.email" class="text-[11px] text-red-400 ml-0.5 mt-1">{{ errors.email }}</p>
-          </div>
+          <AuthInput
+            v-model="form.email"
+            label="Email Address"
+            type="email"
+            placeholder="name@domain.com"
+            :error="errors.email"
+            :is-valid="/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)"
+            @blur="validate('email')"
+            class="mb-3"
+          />
 
           <!-- Password -->
-          <div class="space-y-1.5">
-            <div class="flex justify-between items-center ml-0.5">
-              <label class="text-[10px] uppercase tracking-[0.22em] font-body font-medium text-white/40">Password</label>
+          <div class="relative mb-6">
+            <AuthInput
+              v-model="form.password"
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              :error="errors.password"
+              :is-valid="form.password.length >= 8"
+              @blur="validate('password')"
+            />
+            <div class="absolute -bottom-5 right-1">
               <a href="#" class="text-[11px] text-primary/70 hover:text-primary transition-colors font-body">Forgot password?</a>
             </div>
-            <div class="relative">
-              <input
-                v-model="form.password"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="••••••••"
-                class="form-input pr-12"
-                :class="{ 'form-input--error': errors.password }"
-                @blur="validate('password')"
-              />
-              <button
-                type="button"
-                class="absolute right-4 top-1/2 -translate-y-1/2 text-primary/60 hover:text-primary transition-colors"
-                @click="showPassword = !showPassword"
-              >
-                <span class="material-symbols-outlined text-[18px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
-              </button>
-            </div>
-            <p v-if="errors.password" class="text-[11px] text-red-400 ml-0.5 mt-1">{{ errors.password }}</p>
           </div>
 
           <button type="submit" class="btn-primary w-full h-[52px] mt-2" :class="{ 'btn-loading': loading }">
