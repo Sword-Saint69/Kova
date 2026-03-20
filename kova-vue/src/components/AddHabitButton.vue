@@ -6,13 +6,13 @@
     @click="handle"
   >
     <Transition name="label" mode="out-in">
-      <span v-if="!added" key="add">+ Add</span>
-      <span v-else key="added">✓ Added</span>
+      <span v-if="!added" key="add" class="btn-label">+ Add</span>
+      <span v-else         key="added" class="btn-label">✓ Added</span>
     </Transition>
   </button>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
 const emit  = defineEmits(['add'])
@@ -26,30 +26,32 @@ function handle() {
 
 <style scoped>
 .add-btn {
-  height: 28px;
-  padding: 0 10px;
+  height: 28px; padding: 0 10px;
   border: 0.5px solid rgba(160,236,6,0.25);
   border-radius: 8px;
   background: rgba(160,236,6,0.09);
   color: #a0ec06;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 11px; font-weight: 600;
   font-family: 'DM Sans', sans-serif;
   cursor: pointer;
   transition:
     transform        150ms ease,
-    background-color 150ms ease;
+    background-color 150ms ease,
+    border-color     150ms ease;
 }
-.add-btn:hover:not(.added)  { transform: scale(1.03); }
-.add-btn:active:not(.added) { transform: scale(0.92); }
+.add-btn:hover:not(.added)  { transform: scale(1.04); }
+.add-btn:active:not(.added) { transform: scale(0.92); transition-duration: 80ms; }
 .add-btn.added {
   background: rgba(160,236,6,0.14);
+  border-color: rgba(160,236,6,0.35);
   cursor: default;
 }
 
-/* Label crossfade */
+/* Text crossfade */
 .label-enter-active,
-.label-leave-active { transition: opacity 0.12s ease, transform 0.12s ease; }
-.label-enter-from   { opacity: 0; transform: translateY(5px); }
-.label-leave-to     { opacity: 0; transform: translateY(-5px); }
+.label-leave-active {
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.label-enter-from { opacity: 0; transform: translateY(5px); }
+.label-leave-to   { opacity: 0; transform: translateY(-5px); }
 </style>
