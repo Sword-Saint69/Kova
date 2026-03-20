@@ -159,26 +159,20 @@ watch(() => props.error, (newVal) => {
 
 /* 12. Label float up */
 .auth-label {
-  position: absolute;
-  left: 17px;
-  top: 15px;
-  font-size: 14px;
-  color: rgba(255,255,255,0.4);
-  font-family: 'DM Sans', sans-serif;
-  pointer-events: none;
-  transform-origin: left top;
-  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), 
-              color 300ms ease, opacity 300ms ease;
-  z-index: 10;
-}
-.is-focused .auth-label,
-.has-value .auth-label {
-  transform: translateY(-26px) scale(0.75);
-  color: rgba(255,255,255,0.6);
-  letter-spacing: 0.1em;
+  font-size: 10px;
   text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  margin-left: 2px;
+  margin-bottom: 6px;
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), color 300ms ease;
+  transform-origin: left bottom;
+  display: block;
 }
 .is-focused .auth-label {
+  transform: translateY(-4px);
   color: #a0ec06;
 }
 
