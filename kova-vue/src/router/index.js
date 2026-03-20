@@ -1,3 +1,4 @@
+import { createRouter, createWebHistory } from 'vue-router';
 import { authClient } from '../utils/auth';
 
 const routes = [
