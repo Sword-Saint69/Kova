@@ -295,7 +295,7 @@ async function fetchDashboardData() {
       SELECT "habitId" 
       FROM "Log" 
       WHERE "userId" = ${user.value.id} 
-      AND "date"::text LIKE ${today + '%'}
+      AND "date"::date = ${today}::date
     `;
     
     const completedIds = new Set(todayLogs.map(l => l.habitId));
