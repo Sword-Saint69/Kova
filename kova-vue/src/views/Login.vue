@@ -97,7 +97,7 @@ async function handleGoogleSignIn() {
   try {
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: window.location.origin,
+      callbackURL: window.location.origin + "/dashboard",
     });
   } catch (error) {
     console.error("Google sign-in error:", error);
@@ -112,7 +112,7 @@ async function handleSubmit() {
   loading.value = false;
   success.value = true;
   await new Promise(r => setTimeout(r, 500)); 
-  router.push('/');
+  router.push('/dashboard');
 }
 </script>
 
