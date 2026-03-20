@@ -1,11 +1,43 @@
 <script setup>
-import Heatmap from './Heatmap.vue';
+import { computed } from 'vue';
+
+const colors = {
+  empty: '#181818',
+  level1: '#085041',
+  level2: '#0F6E56',
+  level3: '#1D9E75',
+  level4: '#5DCAA5',
+  level5: '#a0ec06'
+};
+
+const miniCells = computed(() => {
+  const result = [];
+  for (let i = 0; i < 12 * 7; i++) {
+    const col = Math.floor(i / 7);
+    let level = 0;
+    const random = Math.random();
+    
+    if (col >= 0 && col <= 3) {
+      level = random < 0.8 ? 0 : 1;
+    } else if (col >= 4 && col <= 7) {
+      if (random < 0.5) level = random < 0.5 ? 1 : 2;
+      else level = random < 0.5 ? 2 : 3;
+    } else if (col >= 8 && col <= 11) {
+      level = random < 0.3 ? 3 : (random < 0.65 ? 4 : 5);
+    }
+    
+    result.push({
+      id: i,
+      color: level === 0 ? colors.empty : colors[`level${level}`]
+    });
+  }
+  return result;
+});
 </script>
 
 <template>
   <section class="hero-section relative w-full bg-[#0a0a0a] overflow-hidden">
-
-    <div class="hero-grid relative z-10">
+    <div class="hero-inner relative z-10">
         <!-- Left Side -->
         <div class="hero-left">
             <div class="space-y-4">
@@ -22,18 +54,15 @@ import Heatmap from './Heatmap.vue';
             </div>
 
             <div class="flex flex-col sm:flex-row items-center gap-4">
-                <!-- Primary Button (10px rounded rect) -->
-                <button class="btn-primary flex items-center gap-2 hover:bg-[#b8f520] transition-all">
+                <button class="btn-start-free flex items-center gap-2 hover:bg-[#b8f520] transition-all">
                     Start for free <span class="material-symbols-outlined">arrow_forward</span>
                 </button>
-                
-                <!-- Ghost Button (10px rounded rect) -->
-                <button class="btn-ghost-hero transition-all">
+                <button class="btn-see-profile transition-all">
                     See a live profile
                 </button>
             </div>
 
-            <!-- Social Proof Row (Refined) -->
+            <!-- Social Proof Row -->
             <div class="flex items-center gap-3 pt-4">
                 <div class="flex -space-x-2">
                     <img alt="" class="w-8 h-8 rounded-full border-[1.5px] border-primary bg-primary/12 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe3kCAHCETkT4YojhOPs9Ok1iyA8doQ9FGgXaT6qOspcFkJ7rY5UnATbe2NsdotPOAjDKmd4WFLHJ34ggixl7PFRkAHoQJ_xxV852h_TzZv64uPFGib5tWPppduMZYYdl8HrcyRydRV9pGdvPRDOsvT76taE6ivq3lyHH1iXhWr26X3sUSQhjvZzl7gIgDhW3MfcLY02P8OYOEu1uPfBBK8TktzBqetZjOkHpnoR-loEyl0RYs6Si37QA1tINS-LEpYh4h8u61G92f"/>
@@ -46,16 +75,18 @@ import Heatmap from './Heatmap.vue';
             </div>
         </div>
 
-        <!-- Right Side Heatmap -->
-        <div class="hero-right overflow-visible">
-            <Heatmap 
-                :rows="7" 
-                :cols="52" 
-                cellSize="11px" 
-                gap="2px" 
-                showLabels 
-                showLegend 
-            />
+        <!-- Right Side Stats -->
+        <div class="hero-right">
+            <span class="stat-large">32</span>
+            <span class="stat-label">day streak</span>
+            
+            <div class="mini-grid">
+                <div v-for="cell in miniCells" :key="cell.id" class="mini-cell" :style="{ backgroundColor: cell.color }"></div>
+            </div>
+
+            <div class="streak-pill">
+                🔥 32 days in a row
+            </div>
         </div>
     </div>
 
@@ -72,12 +103,11 @@ import Heatmap from './Heatmap.vue';
   min-height: 100vh;
   display: flex;
   align-items: center;
-  overflow: visible;
 }
 
-.hero-grid {
+.hero-inner {
   display: grid;
-  grid-template-columns: 52% 48%;
+  grid-template-columns: 55% 45%;
   align-items: center;
   width: 100%;
   max-width: 1200px;
@@ -96,41 +126,85 @@ import Heatmap from './Heatmap.vue';
 .hero-right {
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  align-items: flex-start;
-  overflow: visible;
+  gap: 16px;
+  padding-left: 40px;
 }
 
-.btn-primary {
+.stat-large {
+  font-family: 'Bodoni Moda', serif;
+  font-weight: 900;
+  font-size: 120px;
+  color: #a0ec06;
+  line-height: 1;
+  text-align: center;
+}
+
+.stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  font-size: 18px;
+  color: rgba(240,237,232,0.50);
+  margin-top: -8px;
+  text-align: center;
+}
+
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 10px);
+  grid-template-rows: repeat(7, 10px);
+  gap: 2px;
+  width: 142px;
+}
+
+.mini-cell {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.streak-pill {
+  background: rgba(160,236,6,0.10);
+  border: 0.5px solid rgba(160,236,6,0.25);
+  border-radius: 99px;
+  padding: 4px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #a0ec06;
+}
+
+.btn-start-free {
   border-radius: 10px;
   height: 52px;
   background: #a0ec06;
   color: #0a0a0a;
-  font-family: 'DM Sans', sans-serif;
   font-size: 15px;
   font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
   padding: 0 24px;
+  border: none;
 }
 
-.btn-ghost-hero {
+.btn-see-profile {
   border-radius: 10px;
   height: 52px;
-  padding: 0 20px;
+  background: transparent;
   border: 0.5px solid rgba(255,255,255,0.13);
   color: rgba(240,237,232,0.55);
-  font-family: 'DM Sans', sans-serif;
   font-size: 14px;
-  font-weight: 400;
-  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  padding: 0 20px;
 }
-.btn-ghost-hero:hover {
+.btn-see-profile:hover {
   background: rgba(255,255,255,0.05);
   border-color: rgba(255,255,255,0.2);
   color: #f0ede8;
 }
 
 @media (max-width: 1024px) {
-  .hero-grid {
+  .hero-inner {
     grid-template-columns: 1fr;
     gap: 60px;
     padding-top: 120px;
