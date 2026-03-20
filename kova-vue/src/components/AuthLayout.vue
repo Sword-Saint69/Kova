@@ -17,8 +17,6 @@
       class="w-full lg:w-1/2 bg-[#111111] flex flex-col items-center justify-center p-6 md:p-12 min-h-screen transition-all duration-1000 delay-150 ease-[cubic-bezier(0.16,1,0.3,1)]"
       :class="mounted ? 'translate-x-0 opacity-100' : 'translate-x-24 opacity-0'"
       style="perspective: 1000px;"
-      @mousemove="handleTilt"
-      @mouseleave="resetTilt"
     >
       <!-- Tilt wrapper -->
       <div class="w-full max-w-[380px] space-y-8 will-change-transform transition-transform duration-200 ease-out">
@@ -49,19 +47,13 @@
         </header>
 
         <!-- Dynamic Form Slot with Cross-Fade (30) -->
-        <div class="relative min-h-[400px]">
+        <div class="relative">
           <transition name="form-fade" mode="out-in">
             <div :key="step" class="w-full form-wrapper">
               <slot></slot>
             </div>
           </transition>
         </div>
-
-        <!-- 50. Success redirect wipe overlay -->
-        <div 
-          class="fixed inset-0 bg-primary z-50 transition-transform duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] pointer-events-none"
-          :class="isSuccessWipe ? 'translate-y-0' : 'translate-y-full'"
-        ></div>
         
       </div>
     </section>
@@ -69,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, provide } from 'vue';
+import { ref, onMounted } from 'vue';
 import AuthLeftPanel from './AuthLeftPanel.vue';
 
 const props = defineProps({
@@ -79,12 +71,6 @@ const props = defineProps({
 const mounted = ref(false);
 onMounted(() => {
   // 32. Page fade enter
-  setTimeout(() => { mounted.value = true; }, 50);
-});
-
-// 32. Page fade enter
-const mounted = ref(false);
-onMounted(() => {
   setTimeout(() => { mounted.value = true; }, 50);
 });
 </script>
