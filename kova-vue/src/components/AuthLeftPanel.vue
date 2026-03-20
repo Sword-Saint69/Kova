@@ -1,6 +1,6 @@
 <template>
   <section 
-    class="flex w-full lg:w-1/2 bg-[#0a0a0a] relative overflow-hidden flex-col justify-between p-8 md:p-16 lg:min-h-screen lg:sticky lg:top-0 h-auto lg:h-screen z-20"
+    class="flex w-full lg:w-1/2 bg-[#111111] relative overflow-hidden flex-col justify-between p-8 md:p-16 lg:min-h-screen lg:sticky lg:top-0 h-auto lg:h-screen z-20"
     @mousemove="handleMouseMove"
     @click="handleRipple"
     ref="panelEl"
