@@ -5,7 +5,7 @@
 
       </div>
       <div class="relative z-10 space-y-6">
-        <h2 class="text-4xl md:text-6xl font-headline font-black text-on-primary-container leading-tight">Start building your<br/>habit monograph.</h2>
+        <h2 class="text-4xl md:text-6xl font-headline font-black text-[#0a0a0a] leading-tight">Start building your<br/>habit monograph.</h2>
         <div class="space-y-4">
           <button class="px-10 py-5 bg-on-primary-container text-primary font-black rounded-2xl text-lg hover:scale-105 transition-transform shadow-2xl">
             Start your monograph →
