@@ -1,20 +1,29 @@
 import { ref } from 'vue'
 import { useIntersectionObserver } from '@vueuse/core'
 
-export function useScrollReveal(options = {}) {
-  const target  = ref(null)
+interface ScrollRevealOptions {
+  threshold?: number
+  rootMargin?: string
+  once?: boolean
+}
+
+export function useScrollReveal(options: ScrollRevealOptions = {}) {
+  const target  = ref<HTMLElement | null>(null)
   const visible = ref(false)
 
   useIntersectionObserver(
     target,
-    ([{ isIntersecting }]) => {
-      if (isIntersecting) visible.value = true
-      // Once revealed, stays revealed — no re-trigger
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        visible.value = true
+        // once: true by default — never re-triggers
+      } else if (!options.once) {
+        visible.value = false
+      }
     },
     {
-      threshold: 0.12,
-      rootMargin: '-8% 0px',
-      ...options,
+      threshold:  options.threshold  ?? 0.12,
+      rootMargin: options.rootMargin ?? '-8% 0px',
     }
   )
 

@@ -1,35 +1,65 @@
 <template>
-  <div ref="tileRef" class="streak-tile">
-    <span class="streak-label">Current streak</span>
-    <span class="streak-num">{{ displayed }}</span>
-    <span class="streak-unit">days in a row</span>
-  </div>
+  <span ref="el" class="streak-num">{{ displayed }}</span>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import gsap from 'gsap'
 
-const props = defineProps({ value: Number })
+const props = defineProps<{ value: number }>()
+const el        = ref<HTMLElement | null>(null)
 const displayed = ref(0)
-const tileRef   = ref(null)
+
+function easeOutCubic(t: number): number {
+  return 1 - Math.pow(1 - t, 3)
+}
+
+function runCounter() {
+  const duration  = Math.min(props.value * 22, 1200) // ms, max 1.2s
+  const startTime = performance.now()
+
+  function tick(now: number) {
+    const elapsed  = now - startTime
+    const progress = Math.min(elapsed / duration, 1)
+    const eased    = easeOutCubic(progress)
+
+    displayed.value = Math.round(props.value * eased)
+
+    if (progress < 1) {
+      requestAnimationFrame(tick)
+    } else {
+      // Pop animation when counter finishes
+      if (el.value) {
+        el.value.style.animation = 'number-pop 0.3s var(--ease-spring)'
+        setTimeout(() => {
+          if (el.value) el.value.style.animation = ''
+        }, 300)
+      }
+    }
+  }
+
+  requestAnimationFrame(tick)
+}
 
 onMounted(() => {
-  // Only animate when tile is visible
+  // Only start when element is visible
   const observer = new IntersectionObserver(([entry]) => {
     if (!entry.isIntersecting) return
     observer.disconnect()
-
-    const duration = Math.min(props.value * 0.022, 1.2)
-
-    gsap.to({ n: 0 }, {
-      n:        props.value,
-      duration,
-      ease:     'power3.out',
-      onUpdate() { displayed.value = Math.round(this.targets()[0].n) },
-    })
+    // Small delay so the tile has faded in first
+    setTimeout(runCounter, 200)
   }, { threshold: 0.5 })
 
-  if (tileRef.value) observer.observe(tileRef.value)
+  if (el.value) observer.observe(el.value)
 })
 </script>
+
+<style scoped>
+.streak-num {
+  font-family: 'Bodoni Moda', serif;
+  font-weight: 900;
+  font-size: 72px;
+  color: #0a0a0a;
+  line-height: 1;
+  display: block;
+}
+</style>

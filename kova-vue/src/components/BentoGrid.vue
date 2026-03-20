@@ -3,9 +3,9 @@ import Heatmap from './Heatmap.vue';
 </script>
 
 <template>
-  <TransitionGroup name="stagger" tag="section" class="max-w-7xl mx-auto px-8 py-24 grid grid-cols-1 md:grid-cols-3 gap-6" appear>
+  <TransitionGroup name="bento" tag="section" class="max-w-7xl mx-auto px-8 py-24 grid grid-cols-1 md:grid-cols-3 gap-6" appear>
     <!-- Tile 1: Visualize -->
-    <div class="bg-surface-container-low p-8 rounded-2xl group overflow-hidden border border-white/5 tile-hover" :style="{ '--delay': '0ms' }" key="1">
+    <div class="bg-surface-container-low p-8 rounded-2xl group overflow-hidden border border-white/5 tile-hover" :style="{ '--i': 0 }" key="1">
       <h3 class="text-on-surface-variant text-xs font-bold tracking-[0.2em] mb-4 uppercase">Visualize</h3>
       <p class="text-2xl font-bold mb-2">Every day, rendered.</p>
       <p class="text-on-surface-variant text-sm mb-8 font-light">Your habits become a living grid. One year. One truth.</p>
@@ -14,7 +14,7 @@ import Heatmap from './Heatmap.vue';
       </div>
     </div>
     <!-- Tile 2: Build -->
-    <div class="bg-primary p-8 rounded-2xl flex flex-col justify-between relative overflow-hidden border border-primary/20 tile-hover" :style="{ '--delay': '55ms' }" key="2">
+    <div class="bg-primary p-8 rounded-2xl flex flex-col justify-between relative overflow-hidden border border-primary/20 tile-hover" :style="{ '--i': 1 }" key="2">
       <svg class="absolute top-4 right-4 text-on-primary-container opacity-20 w-8 h-8" fill="currentColor" viewbox="0 0 24 24">
         <path d="M12 0L13.8 8.2L22 10L13.8 11.8L12 20L10.2 11.8L2 10L10.2 8.2L12 0Z"></path>
       </svg>
@@ -31,7 +31,7 @@ import Heatmap from './Heatmap.vue';
       <p class="text-on-primary-container font-medium text-sm mt-8">Your streak. Your record.</p>
     </div>
     <!-- Tile 3: Share -->
-    <div class="bg-surface-container-low p-8 rounded-2xl flex flex-col justify-between group border border-[#a0ec0633] tile-hover" :style="{ '--delay': '110ms' }" key="3">
+    <div class="bg-surface-container-low p-8 rounded-2xl flex flex-col justify-between group border border-[#a0ec0633] tile-hover" :style="{ '--i': 2 }" key="3">
       <div>
         <h3 class="text-on-surface-variant text-xs font-bold tracking-[0.2em] mb-4 uppercase">Share</h3>
         <p class="text-2xl font-bold mb-2">A public proof of work.</p>
@@ -54,25 +54,21 @@ import Heatmap from './Heatmap.vue';
 </template>
 
 <style scoped>
-/* Each item fades up with its stagger delay */
-.stagger-enter-active {
-  transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out);
-  transition-delay: var(--delay, 0ms);
+/* Entrance — stagger via CSS variable */
+.bento-enter-active {
+  transition:
+    opacity   0.4s var(--ease-out),
+    transform 0.4s var(--ease-out);
+  transition-delay: calc(var(--i) * 55ms);
 }
-.stagger-leave-active {
+.bento-leave-active {
   transition: opacity 0.2s ease-in, transform 0.2s ease-in;
 }
-.stagger-enter-from {
-  opacity: 0;
-  transform: translateY(14px);
-}
-.stagger-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
-}
+.bento-enter-from { opacity: 0; transform: translateY(14px); }
+.bento-leave-to   { opacity: 0; transform: scale(0.94); }
 
-/* When habits are added/removed, remaining tiles slide smoothly */
-.stagger-move {
+/* When tiles reorder (habit added/removed) */
+.bento-move {
   transition: transform 0.35s var(--ease-out);
 }
 </style>

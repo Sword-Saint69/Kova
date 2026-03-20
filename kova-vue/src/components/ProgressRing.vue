@@ -1,14 +1,14 @@
 <template>
-  <div ref="ringRef" class="ring-wrap">
+  <div ref="ringEl" class="ring-wrap">
     <svg width="80" height="80" viewBox="0 0 80 80">
-      <!-- Track -->
+      <!-- Background track -->
       <circle
         cx="40" cy="40" r="32"
         fill="none"
         stroke="rgba(255,255,255,0.06)"
         stroke-width="8"
       />
-      <!-- Animated arc -->
+      <!-- Animated fill arc -->
       <circle
         cx="40" cy="40" r="32"
         fill="none"
@@ -21,36 +21,44 @@
       />
     </svg>
 
+    <!-- Center label -->
     <div class="ring-center">
-      <span class="ring-pct">{{ displayed }}%</span>
+      <span class="ring-pct">{{ displayPct }}%</span>
       <span class="ring-sub">done</span>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import gsap from 'gsap'
 
-const props  = defineProps({ percentage: Number })
-const CIRC   = 2 * Math.PI * 32  // ≈ 201
+const props  = defineProps<{ percentage: number }>()
+const CIRC   = 2 * Math.PI * 32 // ≈ 201.06
+const offset    = ref(CIRC)      // starts fully empty
+const displayPct = ref(0)
+const ringEl  = ref<HTMLElement | null>(null)
 
-const displayed = ref(0)
-const offset    = ref(CIRC)       // starts empty
-const ringRef   = ref(null)
+function easeOutCubic(t: number) {
+  return 1 - Math.pow(1 - t, 3)
+}
 
 function animate() {
-  const proxy = { val: 0 }
-  gsap.to(proxy, {
-    val: props.percentage,
-    duration: 0.7,
-    delay: 0.3,
-    ease: 'power3.out',
-    onUpdate() {
-      displayed.value = Math.round(proxy.val)
-      offset.value = CIRC * (1 - proxy.val / 100)
-    }
-  })
+  const duration  = 750
+  const startTime = performance.now()
+
+  function tick(now: number) {
+    const t = Math.min((now - startTime) / duration, 1)
+    const e = easeOutCubic(t)
+
+    // Both the ring and the number animate together
+    offset.value     = CIRC * (1 - (props.percentage / 100) * e)
+    displayPct.value = Math.round(props.percentage * e)
+
+    if (t < 1) requestAnimationFrame(tick)
+  }
+
+  // 300ms delay — tile fades in first, then ring fills
+  setTimeout(() => requestAnimationFrame(tick), 300)
 }
 
 onMounted(() => {
@@ -60,20 +68,22 @@ onMounted(() => {
     animate()
   }, { threshold: 0.5 })
 
-  if (ringRef.value) observer.observe(ringRef.value)
+  if (ringEl.value) observer.observe(ringEl.value)
 })
 </script>
 
 <style scoped>
-.ring-wrap { position: relative; width: 80px; height: 80px; }
-
+.ring-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
 .ring-arc {
+  /* Arc starts at 12 o'clock */
   transform-origin: 40px 40px;
   transform: rotate(-90deg);
-  /* offset is bound via :stroke-dashoffset — no CSS transition needed
-     because we update it every frame in rAF */
+  /* No CSS transition — offset is driven by rAF every frame */
 }
-
 .ring-center {
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
@@ -85,7 +95,8 @@ onMounted(() => {
   color: #a0ec06; line-height: 1;
 }
 .ring-sub {
-  font-size: 9px; color: rgba(240,237,232,0.22);
+  font-size: 9px;
+  color: rgba(240,237,232,0.22);
   margin-top: 2px;
 }
 </style>
