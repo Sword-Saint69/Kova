@@ -46,10 +46,10 @@
             <span class="material-symbols-outlined text-[20px]">magic_button</span>
             Seed demo data
           </button>
-          <button @click="addHabit" class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 shadow-lg shadow-primary/10">
+          <RouterLink to="/habits/new" class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 shadow-lg shadow-primary/10">
             <span class="material-symbols-outlined text-[20px]">add</span>
             Add habit
-          </button>
+          </RouterLink>
         </div>
       </header>
 
