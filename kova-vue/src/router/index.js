@@ -14,30 +14,9 @@ const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
 });
 
-router.beforeEach(async (to, from, next) => {
-  // Use a fresh fetch to avoid race conditions right after sign-in
-  const { data: session } = await authClient.getSession({
-    fetchOptions: {
-      cache: "no-cache"
-    }
-  });
-  const isAuthenticated = !!session;
-
-  // Re-route authenticated users away from auth pages
-  if (isAuthenticated && ['/login', '/register'].includes(to.path)) {
-    return next('/dashboard');
-  }
-
-  // Also re-route authenticated users from landing if they are logged in
-  if (isAuthenticated && to.path === '/') {
-    return next('/dashboard');
-  }
-
-  // Re-route unauthenticated users from protected pages
-  if (!isAuthenticated && to.meta.requiresAuth) {
-    return next('/login');
-  }
-
+router.beforeEach((to, from, next) => {
+  // Simple check for auth pages: if we are GOING TO login/register, let it through.
+  // We'll handle the "redirect if already logged in" inside the components or a simpler guard.
   next();
 });
 

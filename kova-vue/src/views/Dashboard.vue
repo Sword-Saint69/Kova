@@ -238,15 +238,17 @@ async function fetchDashboardData() {
   loading.value = true;
   
   try {
-    // Try to get session with a small retry to handle race conditions after login
-    let sessionResult = await authClient.getSession();
-    
-    if (!sessionResult.data) {
-      await new Promise(r => setTimeout(r, 1000));
-      sessionResult = await authClient.getSession();
+    // Try to get session with multiple retries to handle race conditions after login
+    let session = null;
+    for (let i = 0; i < 3; i++) {
+      const sessionResult = await authClient.getSession();
+      if (sessionResult.data) {
+        session = sessionResult.data;
+        break;
+      }
+      await new Promise(r => setTimeout(r, 800)); // wait and retry
     }
     
-    const session = sessionResult.data;
     if (!session) {
       router.push('/login');
       return;
