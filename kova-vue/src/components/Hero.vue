@@ -128,6 +128,9 @@ const miniCells = computed(() => {
 
         <!-- Right Side Stats -->
         <div class="hero-right" ref="statEl">
+            <!-- ANIMATION: Gradient blob — slow-morphing radial behind the stat -->
+            <div class="stat-blob" aria-hidden="true"></div>
+
             <!-- ANIMATION 17: Stat "32" blooms from 0 on mount -->
             <span class="stat-large">{{ statDisplayed }}</span>
             <span class="stat-label">day streak</span>

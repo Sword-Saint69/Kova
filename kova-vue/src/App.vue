@@ -8,10 +8,13 @@ import Testimonials from './components/Testimonials.vue';
 import Pricing from './components/Pricing.vue';
 import CtaBanner from './components/CtaBanner.vue';
 import Footer from './components/Footer.vue';
+import ScrollProgress from './components/ScrollProgress.vue';
 </script>
 
 <template>
   <div class="min-h-screen bg-background text-on-surface font-body selection:bg-primary/25 overflow-x-hidden">
+    <!-- ANIMATION: Page scroll progress lime bar -->
+    <ScrollProgress />
     <Navbar class="fade-down" />
     
     <Transition name="page" mode="out-in" appear>

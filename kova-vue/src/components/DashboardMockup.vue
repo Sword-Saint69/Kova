@@ -20,6 +20,26 @@ const pulseCells = computed(() => {
 const mockupEl = ref(null);
 const isVisible = ref(false);
 
+// ANIMATION 12: 3D perspective tilt on mouse position
+const tiltX = ref(0);
+const tiltY = ref(0);
+
+function onMouseMove(e) {
+  const el = mockupEl.value;
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dx = (e.clientX - cx) / (rect.width / 2);
+  const dy = (e.clientY - cy) / (rect.height / 2);
+  tiltX.value = dy * -4; // rotateX
+  tiltY.value = dx * 4;  // rotateY
+}
+function onMouseLeave() {
+  tiltX.value = 0;
+  tiltY.value = 0;
+}
+
 onMounted(() => {
   const observer = new IntersectionObserver(([entry]) => {
     if (!entry.isIntersecting) return;
@@ -32,7 +52,18 @@ onMounted(() => {
 
 <template>
   <section class="max-w-7xl mx-auto px-8 py-24">
-    <div class="relative group mockup-reveal" :class="{ visible: isVisible }" ref="mockupEl">
+    <!-- ANIMATION 12: 3D perspective tilt follows mouse -->
+    <div
+      class="relative group mockup-reveal tilt-card"
+      :class="{ visible: isVisible }"
+      ref="mockupEl"
+      @mousemove="onMouseMove"
+      @mouseleave="onMouseLeave"
+      :style="{
+        transform: `perspective(1200px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`,
+        transition: tiltX === 0 && tiltY === 0 ? 'transform 600ms cubic-bezier(0.16,1,0.3,1)' : 'transform 80ms ease'
+      }"
+    >
       <div class="absolute inset-0 bg-primary/10 rounded-3xl blur-[120px] pointer-events-none" style="box-shadow: 0 0 120px rgba(160,236,6,0.07);"></div>
       <div class="relative bg-surface-container-low rounded-2xl border border-white/5 shadow-2xl overflow-hidden">
         <!-- Browser Chrome -->
