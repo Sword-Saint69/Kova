@@ -1,9 +1,9 @@
 <template>
   <nav class="fixed top-0 w-full z-50 bg-surface/40 backdrop-blur-xl no-line-rule border-none">
     <div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
-      <div class="flex items-center nav-logo">
-        <img src="/logo-full.png" alt="Mark" class="nav-logo-mark object-cover object-left" style="object-position: 0% 50%;">
-        <span class="nav-logo-wordmark">KoVA</span>
+      <div class="flex items-center gap-[10px]">
+        <img src="/logo-full.png" alt="Mark" class="h-[60px] w-[100px] object-cover object-left" style="object-position: 0% 50%;">
+        <span class="font-headline font-black text-[22px] text-[#a0ec06]"></span>
       </div>
       <div class="hidden md:flex gap-8 items-center cursor-pointer">
         <a class="text-[#a0ec06] font-bold border-b-2 border-[#a0ec06] pb-1 font-body text-sm tracking-tight cursor-pointer" @click.prevent="scrollTo('features')">Features</a>
