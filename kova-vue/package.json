@@ -14,7 +14,8 @@
     "gsap": "^3.14.2",
     "split-type": "^0.3.4",
     "three": "^0.183.2",
-    "vue": "^3.5.30"
+    "vue": "^3.5.30",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@tailwindcss/container-queries": "^0.1.1",
