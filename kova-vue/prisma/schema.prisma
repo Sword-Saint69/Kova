@@ -22,7 +22,8 @@ model Habit {
   id          String   @id @default(cuid())
   name        String
   description String?
-  color       String?  @default("#a0ec06")
+  icon        String?  @default("self_improvement")
+  color       String?  @default("#b1ff29")
   user        User     @relation(fields: [userId], references: [id])
   userId      String
   logs        Log[]
