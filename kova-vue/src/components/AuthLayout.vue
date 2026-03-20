@@ -82,12 +82,10 @@ onMounted(() => {
   setTimeout(() => { mounted.value = true; }, 50);
 });
 
-// 50. Success wipe state
-const isSuccessWipe = ref(false);
-
-// Provide a method to forms to trigger success wipe
-provide('triggerSuccessWipe', () => {
-  isSuccessWipe.value = true;
+// 32. Page fade enter
+const mounted = ref(false);
+onMounted(() => {
+  setTimeout(() => { mounted.value = true; }, 50);
 });
 </script>
 

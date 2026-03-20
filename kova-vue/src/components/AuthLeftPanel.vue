@@ -291,18 +291,7 @@ onUnmounted(() => {
   100% { transform: translate(-30px, -20px) scale(1.05); }
 }
 
-/* 37. Scanline sweep */
-.scanline {
-  position: absolute;
-  top: -100px; left: 0; right: 0;
-  height: 100px;
-  background: linear-gradient(to bottom, transparent, #a0ec06, transparent);
-  animation: scan 8s linear infinite;
-}
-@keyframes scan {
-  from { transform: translateY(0); }
-  to { transform: translateY(120vh); }
-}
+
 
 /* 10. Left panel slide-in */
 .left-panel-enter {

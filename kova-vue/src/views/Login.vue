@@ -39,10 +39,10 @@
         :magnetic="true"
       />
 
-      <div class="divider-draw py-1">
-        <div class="line"></div>
+      <div class="flex items-center gap-4 py-1">
+        <div class="h-px flex-1 bg-white/8"></div>
         <span class="text-[9px] uppercase tracking-[0.25em] text-white/25 font-body font-bold whitespace-nowrap">OR CONTINUE WITH</span>
-        <div class="line"></div>
+        <div class="h-px flex-1 bg-white/8"></div>
       </div>
 
       <AuthButton
@@ -60,7 +60,7 @@
         </template>
       </AuthButton>
 
-      <p class="text-center text-sm text-white/35 font-light pt-1">
+      <p class="text-center text-sm text-white/35 font-light pt-1 mb-12">
         Don't have an account?
         <RouterLink to="/register" class="text-primary font-semibold ml-1 hover:underline underline-offset-4">Create one</RouterLink>
       </p>
