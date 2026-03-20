@@ -15,7 +15,12 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const { data: session } = await authClient.getSession();
+  // Use a fresh fetch to avoid race conditions right after sign-in
+  const { data: session } = await authClient.getSession({
+    fetchOptions: {
+      cache: "no-cache"
+    }
+  });
   const isAuthenticated = !!session;
 
   // Re-route authenticated users away from auth pages
