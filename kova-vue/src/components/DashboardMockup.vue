@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
 const pulseCells = computed(() => {
   const cols = 36;
@@ -9,20 +9,30 @@ const pulseCells = computed(() => {
     const colCells = [];
     for (let j = 0; j < rows; j++) {
       const opacity = Math.random() > 0.3 ? (Math.floor(Math.random() * 5) + 1) * 20 : 5;
-      colCells.push({
-        id: `${i}-${j}`,
-        opacity
-      });
+      colCells.push({ id: `${i}-${j}`, opacity });
     }
     result.push({ id: i, cells: colCells });
   }
   return result;
 });
+
+// ANIMATION 20: Dashboard slides up from below on scroll-in
+const mockupEl = ref(null);
+const isVisible = ref(false);
+
+onMounted(() => {
+  const observer = new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) return;
+    observer.disconnect();
+    isVisible.value = true;
+  }, { threshold: 0.15 });
+  if (mockupEl.value) observer.observe(mockupEl.value);
+});
 </script>
 
 <template>
   <section class="max-w-7xl mx-auto px-8 py-24">
-    <div class="relative group">
+    <div class="relative group mockup-reveal" :class="{ visible: isVisible }" ref="mockupEl">
       <div class="absolute inset-0 bg-primary/10 rounded-3xl blur-[120px] pointer-events-none" style="box-shadow: 0 0 120px rgba(160,236,6,0.07);"></div>
       <div class="relative bg-surface-container-low rounded-2xl border border-white/5 shadow-2xl overflow-hidden">
         <!-- Browser Chrome -->
@@ -107,3 +117,16 @@ const pulseCells = computed(() => {
     </div>
   </section>
 </template>
+<style>
+/* ANIMATION 20 — Dashboard mockup slides up from below */
+.mockup-reveal {
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 700ms cubic-bezier(0.16,1,0.3,1),
+              transform 700ms cubic-bezier(0.16,1,0.3,1);
+}
+.mockup-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
