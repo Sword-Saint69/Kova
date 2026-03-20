@@ -14,9 +14,12 @@
         @input="$emit('update:modelValue', $event.target.value)"
         :type="inputType"
         :placeholder="placeholder"
-        class="auth-input"
+        class="auth-input autofill-flash"
         @focus="handleFocus"
         @blur="handleBlur"
+        @keydown="checkCapsLock"
+        @click="handleInputClick"
+        @paste="handlePaste"
         ref="inputEl"
       />
       
@@ -30,7 +33,16 @@
            <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#a0ec06" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-path"/>
         </svg>
         
-        <!-- 19. Eye toggle spring (Passwords only) -->
+        <!-- 40. Caps Lock warning -->
+        <transition name="fade">
+          <div v-if="isCapsLockOn && isFocused && type === 'password'" 
+               class="caps-lock-badge flex items-center gap-1.5 px-2 py-1 bg-white/5 border border-white/10 rounded-md">
+            <span class="material-symbols-outlined text-[12px] text-primary">keyboard_capslock</span>
+            <span class="text-[9px] uppercase font-bold tracking-tighter text-white/60">Caps Lock</span>
+          </div>
+        </transition>
+
+        <!-- 34. Eye toggle spring (Passwords only) -->
         <button
           v-if="type === 'password'"
           type="button"
@@ -42,6 +54,15 @@
         >
           <span class="material-symbols-outlined text-[18px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
         </button>
+      </div>
+
+      <!-- 43. Form field ripple overlay -->
+      <div v-for="r in ripples" :key="r.id" class="input-ripple" :style="{ left: r.x + 'px', top: r.y + 'px' }"></div>
+
+      <!-- 41. Paste confetti container -->
+      <div class="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
+        <div v-for="c in confetti" :key="c.id" class="confetti-dot" 
+             :style="{ left: c.x + 'px', top: c.y + 'px', '--tx': c.tx + 'px', '--ty': c.ty + 'px', backgroundColor: c.color }"></div>
       </div>
     </div>
     
@@ -85,6 +106,11 @@ const isFocused = ref(false);
 
 const showPassword = ref(false);
 const eyePressing = ref(false);
+const isCapsLockOn = ref(false);
+const ripples = ref([]);
+const confetti = ref([]);
+let rippleId = 0;
+let confettiId = 0;
 
 const inputType = computed(() => {
   if (props.type === 'password') {
@@ -95,6 +121,48 @@ const inputType = computed(() => {
 
 const showCheckmark = computed(() => props.isValid && !props.error && props.modelValue.length > 0 && props.type !== 'password');
 
+// 40. Caps Lock Detection
+function checkCapsLock(e) {
+  isCapsLockOn.value = e.getModifierState('CapsLock');
+}
+
+// 43. Input Ripple
+function handleInputClick(e) {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const id = rippleId++;
+  ripples.value.push({ id, x, y });
+  setTimeout(() => {
+    ripples.value = ripples.value.filter(r => r.id !== id);
+  }, 600);
+}
+
+// 41. Paste Confetti
+function handlePaste(e) {
+  if (props.type !== 'email' && !props.label.toLowerCase().includes('email')) return;
+  const rect = inputEl.value.getBoundingClientRect();
+  const centerX = rect.width / 2;
+  const centerY = rect.height / 2;
+
+  for (let i = 0; i < 15; i++) {
+    const id = confettiId++;
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 20 + Math.random() * 60;
+    confetti.value.push({
+      id,
+      x: centerX,
+      y: centerY,
+      tx: Math.cos(angle) * dist,
+      ty: Math.sin(angle) * dist,
+      color: i % 2 === 0 ? '#a0ec06' : '#ffffff'
+    });
+    setTimeout(() => {
+      confetti.value = confetti.value.filter(c => c.id !== id);
+    }, 800);
+  }
+}
+
 function handleFocus() {
   isFocused.value = true;
   emit('focus');
@@ -102,52 +170,10 @@ function handleFocus() {
 
 function handleBlur() {
   isFocused.value = false;
+  isCapsLockOn.value = false;
   emit('blur');
 }
 
-function toggleEye() {
-  eyePressing.value = false;
-  showPassword.value = !showPassword.value;
-}
-
-// 18. Password strength logic
-const strengthScore = computed(() => {
-  if (props.type !== 'password' || props.modelValue.length === 0) return 0;
-  let score = 0;
-  const val = props.modelValue;
-  if (val.length > 5) score++;
-  if (val.length > 8) score++;
-  if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
-  if (/[^A-Za-z0-9]/.test(val)) score++;
-  return Math.min(score, 3);
-});
-
-const strengthWidth = computed(() => {
-  if (props.modelValue.length === 0) return '0%';
-  if (strengthScore.value === 1) return '33%';
-  if (strengthScore.value === 2) return '66%';
-  return '100%';
-});
-
-const strengthColor = computed(() => {
-  if (strengthScore.value <= 1) return '#f87171'; // red
-  if (strengthScore.value === 2) return '#fbbf24'; // yellow
-  return '#a0ec06'; // lime
-});
-
-// 15. Error shake
-// Adding the shake class when error becomes truthy
-watch(() => props.error, (newVal) => {
-  if (newVal) {
-    if (inputEl.value) {
-      const parent = inputEl.value.closest('.auth-input-group');
-      parent.classList.remove('shake');
-      // Trigger reflow
-      void parent.offsetWidth;
-      parent.classList.add('shake');
-    }
-  }
-});
 </script>
 
 <style scoped>
@@ -298,6 +324,51 @@ watch(() => props.error, (newVal) => {
   border-radius: 2px;
   transition: width 400ms cubic-bezier(0.16, 1, 0.3, 1), background-color 400ms ease;
 }
+
+/* 42. Autofill flash */
+.autofill-flash:-webkit-autofill {
+  animation: autofill-glow 1s ease-out;
+}
+@keyframes autofill-glow {
+  0% { box-shadow: 0 0 0 100px #1a1a1a inset; }
+  20% { box-shadow: 0 0 0 100px #a0ec0622 inset, 0 0 20px #a0ec0633; }
+  100% { box-shadow: 0 0 0 100px #1a1a1a inset; }
+}
+
+/* 43. Input Ripple */
+.input-ripple {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: rgba(160,236,6,0.2);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  transform: translate(-50%, -50%);
+  animation: ripple-spread 600ms ease-out forwards;
+}
+@keyframes ripple-spread {
+  to { width: 100%; height: 200%; opacity: 0; }
+}
+
+/* 41. Paste Confetti */
+.confetti-dot {
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  animation: confetti-drift 800ms cubic-bezier(0.1, 1, 0.3, 1) forwards;
+}
+@keyframes confetti-drift {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+.caps-lock-badge {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
 
 /* 19. Eye toggle spring */
 .eye-toggle {
