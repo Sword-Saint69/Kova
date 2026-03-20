@@ -7,7 +7,7 @@ import Heatmap from './Heatmap.vue';
 
     <div class="hero-grid relative z-10 max-w-7xl mx-auto px-8 w-full">
         <!-- Left Side -->
-        <div class="hero-left pr-[60px]">
+        <div class="hero-left">
             <div class="space-y-4">
                 <span class="block text-[11px] font-medium uppercase tracking-[0.15em] text-primary/60">HABIT ENGINEERING</span>
                 <h1 class="font-headline font-black leading-[0.9] tracking-tighter">
@@ -47,7 +47,7 @@ import Heatmap from './Heatmap.vue';
         </div>
 
         <!-- Right Side Heatmap -->
-        <div class="hero-right w-[calc(52*13px)] overflow-visible">
+        <div class="hero-right overflow-visible">
             <Heatmap 
                 :rows="7" 
                 :cols="52" 
@@ -77,7 +77,8 @@ import Heatmap from './Heatmap.vue';
 
 .hero-grid {
   display: grid;
-  grid-template-columns: 52% 48%;
+  grid-template-columns: 1fr max-content;
+  gap: 40px;
   align-items: center;
   width: 100%;
 }
