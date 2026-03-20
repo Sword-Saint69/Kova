@@ -1,13 +1,22 @@
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 export function useReducedMotion() {
-  const reduced = ref(false)
+  const isReduced = ref(false)
+  let mediaQuery: MediaQueryList | null = null
+
+  function update(e: MediaQueryListEvent | MediaQueryList) {
+    isReduced.value = e.matches
+  }
 
   onMounted(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    reduced.value = mq.matches
-    mq.addEventListener('change', (e) => { reduced.value = e.matches })
+    mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    update(mediaQuery)
+    mediaQuery.addEventListener('change', update)
   })
 
-  return { reduced }
+  onUnmounted(() => {
+    if (mediaQuery) mediaQuery.removeEventListener('change', update)
+  })
+
+  return isReduced
 }
