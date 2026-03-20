@@ -107,12 +107,29 @@ async function handleGoogleSignIn() {
 async function handleSubmit() {
   ['email', 'password'].forEach(validate);
   if (errors.email || errors.password) return;
+  
   loading.value = true;
-  await new Promise(r => setTimeout(r, 1200));
-  loading.value = false;
-  success.value = true;
-  await new Promise(r => setTimeout(r, 500)); 
-  router.push('/dashboard');
+  try {
+    const { data, error } = await authClient.signIn.email({
+      email: form.email,
+      password: form.password,
+    });
+
+    if (error) {
+      errors.email = error.message || "Invalid email or password.";
+      loading.value = false;
+      return;
+    }
+
+    success.value = true;
+    await new Promise(r => setTimeout(r, 800)); 
+    router.push('/dashboard');
+  } catch (err) {
+    console.error("Sign in error:", err);
+    errors.email = "An unexpected error occurred.";
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 

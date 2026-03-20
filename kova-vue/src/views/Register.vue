@@ -121,12 +121,30 @@ async function handleGoogleSignIn() {
 async function handleSubmit() {
   ['name', 'email', 'password'].forEach(validate);
   if (errors.name || errors.email || errors.password) return;
+  
   loading.value = true;
-  await new Promise(r => setTimeout(r, 1200)); // simulate API
-  loading.value = false;
-  success.value = true;
-  await new Promise(r => setTimeout(r, 500)); 
-  router.push('/dashboard');
+  try {
+    const { data, error } = await authClient.signUp.email({
+      email: form.email,
+      password: form.password,
+      name: form.name,
+    });
+
+    if (error) {
+      errors.email = error.message || "Failed to create account.";
+      loading.value = false;
+      return;
+    }
+
+    success.value = true;
+    await new Promise(r => setTimeout(r, 800)); 
+    router.push('/dashboard');
+  } catch (err) {
+    console.error("Sign up error:", err);
+    errors.email = "An unexpected error occurred.";
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 
