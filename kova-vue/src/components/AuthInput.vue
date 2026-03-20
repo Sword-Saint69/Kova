@@ -1,7 +1,7 @@
 <template>
   <div class="auth-input-group" :class="{ 'has-error': error, 'is-focused': isFocused, 'has-value': modelValue.length > 0 }">
-    <!-- 12. Label float up -->
-    <label class="auth-label">{{ label }}</label>
+    <!-- 12. Label float up & 53. Kinetic label -->
+    <label class="auth-label" :class="{ 'kinetic-jiggle': isFirstFocus }">{{ label }}</label>
     
     <div class="relative w-full">
       <!-- 11. Input focus border draw -->
@@ -107,6 +107,8 @@ const isFocused = ref(false);
 const showPassword = ref(false);
 const eyePressing = ref(false);
 const isCapsLockOn = ref(false);
+const isFirstFocus = ref(false);
+const hasFocusedEver = ref(false);
 const ripples = ref([]);
 const confetti = ref([]);
 let rippleId = 0;
@@ -165,6 +167,11 @@ function handlePaste(e) {
 
 function handleFocus() {
   isFocused.value = true;
+  if (!hasFocusedEver.value) {
+    isFirstFocus.value = true;
+    hasFocusedEver.value = true;
+    setTimeout(() => { isFirstFocus.value = false; }, 800);
+  }
   emit('focus');
 }
 
@@ -318,6 +325,19 @@ watch(() => props.error, (newVal) => {
 .has-value .custom-placeholder {
   transform: translateX(-10px);
   opacity: 0;
+}
+
+/* 53. Kinetic label jiggle */
+.kinetic-jiggle {
+  animation: jiggle-playful 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+@keyframes jiggle-playful {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-2px) rotate(-1deg); }
+  30% { transform: translateX(3px) rotate(1deg); }
+  45% { transform: translateX(-3px) rotate(-1.5deg); }
+  60% { transform: translateX(2px) rotate(1deg); }
+  75% { transform: translateX(-1px) rotate(-0.5deg); }
 }
 
 /* 15. Error shake */

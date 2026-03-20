@@ -74,29 +74,24 @@
     <!-- Hero headline -->
     <div class="relative z-10 max-w-xl">
       <h1 class="font-headline italic text-[80px] text-white leading-[0.92] tracking-tight">
-        <!-- 2. Headline word stagger -->
-        <!-- 3. Headline glitch reveal -->
-        <span class="inline-block overflow-hidden align-bottom glitch-wrap pb-2">
-            <span class="word-stagger inline-block" style="--delay: 100ms">Every&nbsp;</span>
-        </span>
-        <span class="inline-block overflow-hidden align-bottom glitch-wrap pb-2">
-            <span class="word-stagger inline-block" style="--delay: 200ms">day&nbsp;</span>
-        </span>
-        <span class="inline-block overflow-hidden align-bottom glitch-wrap pb-2">
-            <span class="word-stagger inline-block" style="--delay: 300ms">is&nbsp;</span>
-        </span>
-        <span class="inline-block overflow-hidden align-bottom glitch-wrap pb-2">
-            <span class="word-stagger inline-block" style="--delay: 400ms">a</span>
+        <!-- 51 & 52. Typewriter & Scramble Headline -->
+        <span class="inline-block overflow-hidden align-bottom pb-2 min-h-[90px] block">
+            {{ displayHeadline }}<span class="animate-pulse text-primary ml-1">_</span>
         </span>
         <br/>
         <!-- 9. "data point." lime glow -->
-        <span class="inline-block overflow-hidden align-bottom glitch-wrap pt-2">
-            <span class="word-stagger text-primary not-italic font-black block mt-2 glow-pulse inline-block" style="--delay: 550ms">data point.</span>
+        <span class="inline-block overflow-hidden align-bottom pt-2">
+            <span class="word-stagger text-primary not-italic font-black block mt-2 glow-pulse inline-block" style="--delay: 1500ms">data point.</span>
         </span>
       </h1>
-      <p class="mt-5 text-[11px] font-body font-medium tracking-[0.22em] uppercase text-primary/55 delay-fade" style="--delay: 800ms;">
-        Technical Rituals for the Modern Mind
-      </p>
+      <!-- 55. Subheading fade-in loop -->
+      <div class="mt-5 h-6 flex items-center overflow-hidden">
+        <transition name="tagline-fade" mode="out-in">
+          <p :key="taglines[taglineIndex]" class="text-[11px] font-body font-medium tracking-[0.22em] uppercase text-primary/55">
+            {{ taglines[taglineIndex] }}
+          </p>
+        </transition>
+      </div>
     </div>
 
     <!-- Step indicators -->
@@ -113,6 +108,12 @@
       </div>
       <p class="text-[10px] font-body uppercase tracking-widest text-white/30 font-medium delay-fade" style="--delay: 900ms;">
         Account <span class="mx-1 opacity-40 transition-colors" :class="{ 'text-primary': step >= 2 }">·</span> Habits <span class="mx-1 opacity-40 transition-colors" :class="{ 'text-primary': step >= 3 }">·</span> Profile
+      </p>
+
+      <!-- 54. Number Counter -->
+      <p class="text-[10px] text-white/15 font-body flex items-center gap-2 mt-2">
+        <span class="h-1 w-1 rounded-full bg-primary/40"></span>
+        Joined by {{ animatedCount.toLocaleString() }}+ engineers
       </p>
     </div>
   </section>
@@ -137,6 +138,55 @@ const trail = ref([]);
 let rippleId = 0;
 let highlightId = 0;
 let trailId = 0;
+
+// 51/52. Scramble Typography logic
+const targetHeadline = "Every day is a";
+const displayHeadline = ref("");
+const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&*$@";
+
+function scrambleType() {
+  let iterations = 0;
+  const interval = setInterval(() => {
+    displayHeadline.value = targetHeadline
+      .split("")
+      .map((char, index) => {
+        if (index < iterations) return targetHeadline[index];
+        return chars[Math.floor(Math.random() * chars.length)];
+      })
+      .join("");
+
+    if (iterations >= targetHeadline.length) clearInterval(interval);
+    iterations += 1/3; 
+  }, 40);
+}
+
+// 54. Number counter
+const animatedCount = ref(0);
+function animateNumber(target) {
+  let start = 0;
+  const duration = 2000;
+  const startTime = performance.now();
+  
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out expo
+    const easeProgress = 1 - Math.pow(2, -10 * progress);
+    animatedCount.value = Math.floor(easeProgress * target);
+    
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+// 55. Tagline loop
+const taglines = ["Build streaks.", "See patterns.", "Own your data."];
+const taglineIndex = ref(0);
+function rotateTaglines() {
+  setInterval(() => {
+    taglineIndex.value = (taglineIndex.value + 1) % taglines.length;
+  }, 3000);
+}
 
 function handleMouseMove(e) {
   if (!panelEl.value) return;
@@ -207,6 +257,9 @@ onMounted(() => {
   requestAnimationFrame(updateTrail);
   triggerHighlight();
   window.addEventListener('scroll', handleScroll);
+  scrambleType();
+  animateNumber(2437);
+  rotateTaglines();
 });
 
 onUnmounted(() => {
@@ -347,6 +400,20 @@ onUnmounted(() => {
   .mobile-collapsed img {
     height: 1.5rem;
   }
+}
+
+/* 55. Tagline cross-fade */
+.tagline-fade-enter-active,
+.tagline-fade-leave-active {
+  transition: all 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tagline-fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.tagline-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 .cubic-spring {
