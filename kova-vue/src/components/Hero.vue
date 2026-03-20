@@ -219,6 +219,25 @@ const miniCells = computed(() => {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ANIMATION 10 — Gradient blob: morphing radial behind the stat */
+.stat-blob {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(160,236,6,0.14) 0%, transparent 70%);
+  filter: blur(40px);
+  animation: blob-morph 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes blob-morph {
+  0%   { transform: scale(1)    rotate(0deg);   opacity: 0.7; border-radius: 50% 40% 60% 50%; }
+  33%  { transform: scale(1.15) rotate(60deg);  opacity: 1;   border-radius: 40% 60% 50% 60%; }
+  66%  { transform: scale(0.9)  rotate(120deg); opacity: 0.6; border-radius: 60% 50% 40% 50%; }
+  100% { transform: scale(1)    rotate(180deg); opacity: 0.7; border-radius: 50% 40% 60% 50%; }
+}
+
 /* ANIMATION 17 — Stat bloom */
 .stat-large {
   font-family: 'Bodoni Moda', serif;
