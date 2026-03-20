@@ -1,6 +1,6 @@
 <template>
   <section 
-    class="flex w-full lg:w-1/2 bg-[#0a0a0a] relative overflow-hidden flex-col justify-between p-8 md:p-16 lg:min-h-screen left-panel-enter lg:sticky lg:top-0 h-auto lg:h-screen z-20"
+    class="flex w-full lg:w-1/2 bg-[#0a0a0a] relative overflow-hidden flex-col justify-between p-8 md:p-16 lg:min-h-screen lg:sticky lg:top-0 h-auto lg:h-screen z-20"
     @mousemove="handleMouseMove"
     @click="handleRipple"
     ref="panelEl"
@@ -215,15 +215,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* 10. Left panel slide-in */
-.left-panel-enter {
-  animation: panel-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@keyframes panel-slide-in {
-  from { transform: translateX(-5%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
 /* 4 & 5. Watermark star slow-spin & pulse breathe */
 .star-anim {
   animation: star-spin 60s linear infinite, star-breathe 8s ease-in-out infinite alternate;

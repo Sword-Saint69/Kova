@@ -5,17 +5,12 @@
     :class="mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'"
   >
     <!-- ─── Left Panel (Animated) ──────────────────────────────────── -->
-    <AuthLeftPanel 
-      :step="step" 
-      class="transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]"
-      :class="mounted ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'"
-    />
+    <AuthLeftPanel :step="step" />
 
     <!-- ─── Right Panel ────────────────────────────────────────────── -->
     <!-- 48. Right panel tilt -> we apply tilt to a wrapper inside. -->
     <section 
-      class="w-full lg:w-1/2 bg-[#111111] flex flex-col items-center justify-center p-6 md:p-12 min-h-screen transition-all duration-1000 delay-150 ease-[cubic-bezier(0.16,1,0.3,1)]"
-      :class="mounted ? 'translate-x-0 opacity-100' : 'translate-x-24 opacity-0'"
+      class="w-full lg:w-1/2 bg-[#111111] flex flex-col items-center justify-center p-6 md:p-12 min-h-screen"
       style="perspective: 1000px;"
     >
       <!-- Tilt wrapper -->
