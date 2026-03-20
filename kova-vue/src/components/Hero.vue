@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 
 /* ─── Social proof counter ─── */
 const counterEl = ref(null);
@@ -50,12 +50,40 @@ onMounted(() => {
     setTimeout(runStatBloom, 150);
   }, { threshold: 0.5 });
   if (statEl.value) obs2.observe(statEl.value);
+
+  // ANIMATION: Scroll-jacked stat + parallax
+  window.addEventListener('scroll', onHeroScroll, { passive: true });
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', onHeroScroll);
 });
 
 // CTA spring press
 const pressing = ref(false);
 function onPress()   { pressing.value = true;  }
 function onRelease() { pressing.value = false; }
+
+/* ─── ANIMATION: Scroll-jacked stat + Parallax layers ─── */
+const heroEl = ref(null);
+const parallaxHeadline = ref(0); // translateY for headline block
+const parallaxStat = ref(0);     // translateY for stat block
+
+function onHeroScroll() {
+  const scrollY = window.scrollY;
+  const heroH   = window.innerHeight;
+
+  // Only active while hero is in view
+  if (scrollY > heroH * 1.2) return;
+
+  // Parallax rates: headline moves slower (0.35x), stat even slower (0.15x)
+  parallaxHeadline.value = scrollY * 0.35;
+  parallaxStat.value     = scrollY * 0.15;
+
+  // Scroll-jacked stat: numericize scroll progress 0→32 over first 40% of hero height
+  const progress = Math.min(scrollY / (heroH * 0.4), 1);
+  statDisplayed.value = Math.round(32 * progress);
+}
 
 /* ─── Mini heatmap cells ─── */
 const colors = {
