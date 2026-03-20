@@ -8,24 +8,6 @@
     <!-- Right edge blur into the form area -->
     <div class="absolute inset-y-0 -right-16 w-32 bg-[#111111]/40 backdrop-blur-3xl pointer-events-none z-30 hidden lg:block"></div>
     <div class="absolute inset-y-0 right-0 w-64 bg-gradient-to-l from-[#111111] via-[#111111]/50 to-transparent pointer-events-none z-20 hidden lg:block"></div>
-    <!-- 38. Noise grain overlay (Animated) -->
-    <div class="absolute inset-0 pointer-events-none opacity-[0.04] z-0 mix-blend-overlay noise-anim"></div>
-
-    <!-- 35. Lime ambient blob -->
-    <div class="absolute w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full -top-40 -left-40 animate-blob pointer-events-none"></div>
-    <div class="absolute w-[400px] h-[400px] bg-primary/10 blur-[100px] rounded-full bottom-20 right-0 animate-blob-reverse pointer-events-none"></div>
-
-    <!-- 39. Mouse-tracked light -->
-    <div 
-      class="absolute inset-0 pointer-events-none z-0 transition-opacity duration-1000"
-      :style="{
-        background: `radial-gradient(600px circle at ${mouseX + panelWidth/2}px ${mouseY + panelHeight/2}px, rgba(160,236,6,0.08), transparent 80%)`,
-        opacity: isMouseIn ? 1 : 0
-      }"
-    ></div>
-
-
-
     <!-- 1. Dot-grid parallax -->
     <div 
       class="absolute inset-0 pointer-events-none transition-transform duration-75 ease-out z-0" 
@@ -35,12 +17,7 @@
         opacity: 0.18,
         transform: `translate(${mouseX * -0.02}px, ${mouseY * -0.02}px)`
       }"
-    >
-      <!-- 36. Grid cell highlight (Random flashes) -->
-      <div v-for="h in highlights" :key="h.id" 
-           class="absolute w-[2px] h-[2px] bg-primary shadow-[0_0_8px_#a0ec06] rounded-full transition-opacity duration-500"
-           :style="{ left: h.x + 'px', top: h.y + 'px', opacity: h.opacity }"></div>
-    </div>
+    ></div>
 
     <!-- 47. Cursor trail -->
     <div v-for="p in trail" :key="p.id" 
@@ -132,10 +109,8 @@ const mouseX = ref(0);
 const mouseY = ref(0);
 const isMouseIn = ref(false);
 const ripples = ref([]);
-const highlights = ref([]);
 const trail = ref([]);
 let rippleId = 0;
-let highlightId = 0;
 let trailId = 0;
 
 // 51/52. Scramble Typography logic
@@ -213,27 +188,6 @@ function updateTrail() {
   requestAnimationFrame(updateTrail);
 }
 
-// 36. Grid cell highlight logic
-function triggerHighlight() {
-  if (!panelEl.value) return;
-  const id = highlightId++;
-  // Snap to grid coordinates (bg-size 28px)
-  const x = Math.floor(Math.random() * (panelWidth.value / 28)) * 28 + 1;
-  const y = Math.floor(Math.random() * (panelHeight.value / 28)) * 28 + 1;
-  
-  highlights.value.push({ id, x, y, opacity: 1 });
-  
-  setTimeout(() => {
-    const h = highlights.value.find(h => h.id === id);
-    if (h) h.opacity = 0;
-    setTimeout(() => {
-      highlights.value = highlights.value.filter(h => h.id !== id);
-    }, 500);
-  }, 1000);
-
-  setTimeout(triggerHighlight, 1000 + Math.random() * 2000);
-}
-
 function handleRipple(e) {
   if (!panelEl.value) return;
   const rect = panelEl.value.getBoundingClientRect();
@@ -250,7 +204,6 @@ const isScrolled = ref(false);
 
 onMounted(() => {
   requestAnimationFrame(updateTrail);
-  triggerHighlight();
   scrambleType();
   animateNumber(2437);
   rotateTaglines();
@@ -262,38 +215,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* 38. Noise grain overlay (Animated) */
-.noise-anim {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  animation: grain 1s steps(2) infinite;
-}
-@keyframes grain {
-  0%, 100% { transform: translate(0, 0); }
-  10% { transform: translate(-1%, -1%); }
-  30% { transform: translate(1%, -1%); }
-  50% { transform: translate(-1%, 1%); }
-  70% { transform: translate(1%, 1%); }
-  90% { transform: translate(-1%, -1%); }
-}
-
-/* 35. Ambient Blobs */
-.animate-blob {
-  animation: blob-float 15s infinite alternate ease-in-out;
-}
-.animate-blob-reverse {
-  animation: blob-float-reverse 12s infinite alternate ease-in-out;
-}
-@keyframes blob-float {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(40px, 40px) scale(1.1); }
-}
-@keyframes blob-float-reverse {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-30px, -20px) scale(1.05); }
-}
-
-
-
 /* 10. Left panel slide-in */
 .left-panel-enter {
   animation: panel-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
