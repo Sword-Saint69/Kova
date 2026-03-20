@@ -5,14 +5,17 @@
     :class="mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'"
   >
     <!-- ─── Left Panel (Animated) ──────────────────────────────────── -->
-    <!-- 29. Register->Login slide: we can control styling of left/right panels here.
-         Wait, AuthLeftPanel inherently occupies w-full lg:w-1/2, no need to push unless we want to swap sides. -->
-    <AuthLeftPanel :step="step" />
+    <AuthLeftPanel 
+      :step="step" 
+      class="transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]"
+      :class="mounted ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'"
+    />
 
     <!-- ─── Right Panel ────────────────────────────────────────────── -->
     <!-- 48. Right panel tilt -> we apply tilt to a wrapper inside. -->
     <section 
-      class="w-full lg:w-1/2 bg-[#111111] flex flex-col items-center justify-center p-6 md:p-12 min-h-screen"
+      class="w-full lg:w-1/2 bg-[#111111] flex flex-col items-center justify-center p-6 md:p-12 min-h-screen transition-all duration-1000 delay-150 ease-[cubic-bezier(0.16,1,0.3,1)]"
+      :class="mounted ? 'translate-x-0 opacity-100' : 'translate-x-24 opacity-0'"
       style="perspective: 1000px;"
       @mousemove="handleTilt"
       @mouseleave="resetTilt"

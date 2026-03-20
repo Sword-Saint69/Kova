@@ -6,6 +6,8 @@
     @click="handleRipple"
     ref="panelEl"
   >
+    <!-- Right edge fade into the form area -->
+    <div class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#111111]/80 to-transparent pointer-events-none z-10 hidden lg:block"></div>
     <!-- 38. Noise grain overlay (Animated) -->
     <div class="absolute inset-0 pointer-events-none opacity-[0.04] z-0 mix-blend-overlay noise-anim"></div>
 
