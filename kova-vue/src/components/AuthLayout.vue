@@ -21,7 +21,7 @@
       @mouseleave="resetTilt"
     >
       <!-- Tilt wrapper -->
-      <div class="w-full max-w-[380px] space-y-8 will-change-transform transition-transform duration-200 ease-out" :style="tiltStyle">
+      <div class="w-full max-w-[380px] space-y-8 will-change-transform transition-transform duration-200 ease-out">
         <!-- Mobile logo -->
         <!-- 46. Logo entrance -->
         <div class="lg:hidden mb-10 overflow-hidden">
@@ -82,28 +82,6 @@ onMounted(() => {
   setTimeout(() => { mounted.value = true; }, 50);
 });
 
-// 48. Right panel tilt
-const rx = ref(0);
-const ry = ref(0);
-function handleTilt(e) {
-  // subtle 3D tilt based on mouse position over right panel
-  const rect = e.currentTarget.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  const xc = rect.width / 2;
-  const yc = rect.height / 2;
-  // max 2 degrees tilt
-  ry.value = ((x - xc) / xc) * 2;
-  rx.value = -((y - yc) / yc) * 2;
-}
-function resetTilt() {
-  rx.value = 0;
-  ry.value = 0;
-}
-const tiltStyle = computed(() => ({
-  transform: `rotateX(${rx.value}deg) rotateY(${ry.value}deg)`
-}));
-
 // 50. Success wipe state
 const isSuccessWipe = ref(false);
 
@@ -127,25 +105,6 @@ provide('triggerSuccessWipe', () => {
   clip-path: inset(0 0 100% 0);
   transform: translateY(-8px);
   opacity: 0;
-}
-
-/* 44. "OR" divider draw (expanded outwards) */
-:deep(.divider-draw) {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 4px 0;
-}
-:deep(.divider-draw .line) {
-  height: 1px;
-  flex: 1;
-  background: rgba(255,255,255,0.08);
-  transform: scaleX(0);
-  transition: transform 800ms cubic-bezier(0.16, 1, 0.3, 1) 300ms;
-  transform-origin: center;
-}
-.mounted :deep(.divider-draw .line) {
-  transform: scaleX(1);
 }
 
 /* 30. Form cross-fade with stagger effect */

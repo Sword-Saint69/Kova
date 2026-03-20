@@ -1,7 +1,6 @@
 <template>
   <section 
     class="flex w-full lg:w-1/2 bg-[#0a0a0a] relative overflow-hidden flex-col justify-between p-8 md:p-16 lg:min-h-screen left-panel-enter lg:sticky lg:top-0 h-auto lg:h-screen z-20"
-    :class="{ 'mobile-collapsed': isScrolled }"
     @mousemove="handleMouseMove"
     @click="handleRipple"
     ref="panelEl"
@@ -24,10 +23,7 @@
       }"
     ></div>
 
-    <!-- 37. Scanline sweep -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-[0.03]">
-      <div class="scanline"></div>
-    </div>
+
 
     <!-- 1. Dot-grid parallax -->
     <div 
@@ -251,21 +247,16 @@ function handleRipple(e) {
 
 const isScrolled = ref(false);
 
-function handleScroll() {
-  isScrolled.value = window.scrollY > 50;
-}
-
 onMounted(() => {
   requestAnimationFrame(updateTrail);
   triggerHighlight();
-  window.addEventListener('scroll', handleScroll);
   scrambleType();
   animateNumber(2437);
   rotateTaglines();
 });
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
+  // Clean up
 });
 </script>
 

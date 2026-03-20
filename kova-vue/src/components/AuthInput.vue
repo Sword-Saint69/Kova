@@ -18,7 +18,6 @@
         @focus="handleFocus"
         @blur="handleBlur"
         @keydown="checkCapsLock"
-        @click="handleInputClick"
         @paste="handlePaste"
         ref="inputEl"
       />
@@ -33,8 +32,6 @@
            <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#a0ec06" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-path"/>
         </svg>
         
-      <!-- 34. Eye toggle spring (Passwords only) -->
-      <div v-if="type === 'password'" class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
         <!-- 40. Caps Lock warning -->
         <transition name="fade">
           <div v-if="isCapsLockOn && isFocused && type === 'password'" 
@@ -44,7 +41,9 @@
           </div>
         </transition>
 
+        <!-- 34. Eye toggle spring (Passwords only) -->
         <button
+          v-if="type === 'password'"
           type="button"
           class="eye-toggle text-primary/60 hover:text-primary transition-colors focus:outline-none"
           :class="{ 'spring-press': eyePressing }"
@@ -378,21 +377,6 @@ watch(() => props.error, (newVal) => {
   0% { box-shadow: 0 0 0 100px #1a1a1a inset; }
   20% { box-shadow: 0 0 0 100px #a0ec0622 inset, 0 0 20px #a0ec0633; }
   100% { box-shadow: 0 0 0 100px #1a1a1a inset; }
-}
-
-/* 43. Input Ripple */
-.input-ripple {
-  position: absolute;
-  width: 2px; height: 2px;
-  background: rgba(160,236,6,0.2);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  transform: translate(-50%, -50%);
-  animation: ripple-spread 600ms ease-out forwards;
-}
-@keyframes ripple-spread {
-  to { width: 100%; height: 200%; opacity: 0; }
 }
 
 /* 41. Paste Confetti */
