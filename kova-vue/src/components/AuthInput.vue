@@ -225,18 +225,13 @@ watch(() => props.error, (newVal) => {
   stroke-dashoffset: 0;
 }
 /* Base border when not focused */
-.auth-input-group::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 50px; /* match input height */
+.auth-input {
   border: 0.5px solid rgba(255,255,255,0.07);
-  border-radius: 12px;
-  pointer-events: none;
-  z-index: 0;
-  transition: border-color 300ms ease;
 }
-.has-error::before {
+.is-focused .auth-input {
+  border-color: transparent;
+}
+.has-error .auth-input {
   border-color: rgba(248,113,113,0.5) !important;
 }
 
