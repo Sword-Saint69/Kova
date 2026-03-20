@@ -24,6 +24,9 @@ model Habit {
   description String?
   icon        String?  @default("self_improvement")
   color       String?  @default("#b1ff29")
+  frequency   String?  @default("Daily")
+  reminderTime String? @default("08:00")
+  dailyGoal   Int?     @default(1)
   user        User     @relation(fields: [userId], references: [id])
   userId      String
   logs        Log[]

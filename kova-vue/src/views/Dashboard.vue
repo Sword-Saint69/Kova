@@ -370,7 +370,8 @@ async function fetchDashboardData() {
         { name: 'No Sugar', icon: 'nutrition' }
       ];
       for (const h of defaults) {
-        await sql`INSERT INTO "Habit" ("name", "icon", "color", "userId") VALUES (${h.name}, ${h.icon}, '#b1ff29', ${user.value.id})`;
+        await sql`INSERT INTO "Habit" ("name", "icon", "color", "frequency", "reminderTime", "dailyGoal", "userId") 
+                  VALUES (${h.name}, ${h.icon}, '#b1ff29', 'Daily', '08:00', 1, ${user.value.id})`;
       }
       userHabits = await sql`SELECT id, name, icon, color FROM "Habit" WHERE "userId" = ${user.value.id} ORDER BY "createdAt" ASC`;
     }
@@ -507,13 +508,7 @@ function handleQuickLog() {
 }
 
 function addHabit() {
-  const name = prompt("Habit name:");
-  if (name) {
-    loading.value = true;
-    sql`INSERT INTO "Habit" ("name", "icon", "color", "userId") VALUES (${name}, 'star', '#b1ff29', ${user.value.id})`
-      .then(() => fetchDashboardData())
-      .catch(e => { console.error(e); loading.value = false; });
-  }
+  router.push('/habits/new');
 }
 
 watch(selectedFilterId, () => processHeatmap(logs.value));
