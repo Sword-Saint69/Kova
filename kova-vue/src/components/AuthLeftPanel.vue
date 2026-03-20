@@ -197,9 +197,20 @@ function handleRipple(e) {
   }, 1000);
 }
 
+const isScrolled = ref(false);
+
+function handleScroll() {
+  isScrolled.value = window.scrollY > 50;
+}
+
 onMounted(() => {
   requestAnimationFrame(updateTrail);
   triggerHighlight();
+  window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
 });
 </script>
 
@@ -311,5 +322,34 @@ onMounted(() => {
 }
 @keyframes simple-fade-up {
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* 45 & 49. Mobile Collapse Header */
+@media (max-width: 1023px) {
+  section {
+    position: sticky;
+    top: 0;
+    transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+    border-bottom: 1px solid rgba(160,236,6,0.1);
+  }
+  .mobile-collapsed {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background: rgba(10,10,10,0.8);
+    backdrop-filter: blur(12px);
+  }
+  .mobile-collapsed .max-w-xl {
+    display: none; /* Hide headline on collapsed mobile */
+  }
+  .mobile-collapsed .flex-col {
+    display: none; /* Hide step dots on collapsed mobile */
+  }
+  .mobile-collapsed img {
+    height: 1.5rem;
+  }
+}
+
+.cubic-spring {
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 </style>
