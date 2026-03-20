@@ -1,36 +1,8 @@
 <template>
   <main class="flex min-h-screen overflow-hidden">
 
-    <!-- ─── Left Panel ─────────────────────────────────────────────── -->
-    <section class="hidden lg:flex w-1/2 bg-[#0a0a0a] relative overflow-hidden flex-col justify-between p-16">
-      <div class="absolute inset-0 pointer-events-none" style="background-image:radial-gradient(circle at 1px 1px, rgba(160,236,6,0.18) 1px, transparent 0);background-size:28px 28px;opacity:0.18;"></div>
-      <div class="pointer-events-none absolute" style="width:380px;height:380px;background:radial-gradient(circle,#a0ec06 2px,transparent 0);background-size:44px 44px;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);opacity:0.04;left:50%;top:50%;transform:translate(-50%,-50%);"></div>
-
-      <div class="relative z-10">
-        <img src="/logo-full.png" alt="KOVA" class="h-14 w-auto object-left object-contain" />
-      </div>
-
-      <div class="relative z-10 max-w-xl">
-        <h1 class="font-headline italic text-[80px] text-white leading-[0.92] tracking-tight">
-          Every day is a<br/>
-          <span class="text-primary not-italic font-black block mt-2">data point.</span>
-        </h1>
-        <p class="mt-5 text-[11px] font-body font-medium tracking-[0.22em] uppercase text-primary/55">
-          Technical Rituals for the Modern Mind
-        </p>
-      </div>
-
-      <div class="relative z-10 flex flex-col gap-3">
-        <div class="flex items-center gap-2">
-          <div class="h-1.5 w-10 bg-white/20 rounded-full"></div>
-          <div class="h-1.5 w-10 bg-primary rounded-full"></div>
-          <div class="h-2 w-2 bg-white/20 rounded-full"></div>
-        </div>
-        <p class="text-[10px] font-body uppercase tracking-widest text-white/30 font-medium">
-          Account <span class="mx-1 opacity-40">·</span> Habits <span class="mx-1 opacity-40">·</span> Profile
-        </p>
-      </div>
-    </section>
+    <!-- ─── Left Panel (Animated) ──────────────────────────────────── -->
+    <AuthLeftPanel :step="2" />
 
     <!-- ─── Right Panel ────────────────────────────────────────────── -->
     <section class="w-full lg:w-1/2 bg-[#111111] flex flex-col items-center justify-center p-6 md:p-12 min-h-screen">
@@ -123,6 +95,7 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
+import AuthLeftPanel from '../components/AuthLeftPanel.vue';
 
 const router = useRouter();
 const showPassword = ref(false);

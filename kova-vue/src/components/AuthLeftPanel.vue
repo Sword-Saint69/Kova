@@ -42,7 +42,7 @@
     <!-- 4. Watermark star slow-spin & 5. pulse breathe -->
     <div 
       class="pointer-events-none absolute z-0 star-anim" 
-      style="width:380px;height:380px;background:radial-gradient(circle,#a0ec06 2px,transparent 0);backgroundSize:44px 44px;clipPath:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);opacity:0.04;left:50%;top:50%;margin-left:-190px;margin-top:-190px;"
+      style="width:380px;height:380px;background:radial-gradient(circle,#a0ec06 2px,transparent 0);background-size:44px 44px;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);opacity:0.04;left:50%;top:50%;margin-left:-190px;margin-top:-190px;"
     ></div>
 
     <!-- Brand logo -->
