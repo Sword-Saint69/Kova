@@ -1,82 +1,51 @@
 <template>
-  <div ref="chartRef" class="bar-chart">
+  <div class="chart-wrap">
     <div
       v-for="(val, i) in data"
       :key="i"
-      class="bar-col"
+      class="bar-track"
     >
       <div
-        class="bar"
-        ref="bars"
-        :class="{ today: i === todayIndex }"
+        class="bar-fill"
         :style="{
-          height: (val / max * 100) + '%',
-          background: i === todayIndex ? '#a0ec06' : 'rgba(160,236,6,0.22)',
+          transform: `scaleY(${val / max})`,
+          transitionDelay: (i * 40) + 'ms'
         }"
       />
-      <span class="bar-label" :class="{ today: i === todayIndex }">
-        {{ labels[i] }}
-      </span>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-import gsap from 'gsap'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
 
-const props = defineProps({
-  data:       Array,
-  todayIndex: Number
-})
-
-const labels  = ['M','T','W','T','F','S','S']
-const max     = computed(() => Math.max(...props.data))
-const chartRef = ref(null)
-const bars = ref([])
-
-onMounted(() => {
-  gsap.set(bars.value, { scaleY: 0, transformOrigin: 'bottom' })
-
-  const observer = new IntersectionObserver(([entry]) => {
-    if (!entry.isIntersecting) return
-    observer.disconnect()
-
-    gsap.to(bars.value, {
-      scaleY: 1,
-      duration: 0.45,
-      ease: 'power3.out',
-      stagger: 0.04,
-      delay: 0.1
-    })
-  }, { threshold: 0.5 })
-
-  if (chartRef.value) observer.observe(chartRef.value)
-})
+const props = defineProps<{ data: number[] }>()
+const max   = Math.max(...props.data, 1) // prevent / 0
+// Using pure CSS transitions with staggered delay for entrance
 </script>
 
 <style scoped>
-.bar-chart {
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-  height: 72px;
+.chart-wrap {
+  display: flex; align-items: flex-end; gap: 6px;
+  height: 120px;
 }
-.bar-col {
+.bar-track {
   flex: 1; height: 100%;
-  display: flex; flex-direction: column;
-  align-items: center; gap: 5px;
-  justify-content: flex-end;
+  background: rgba(255,255,255,0.03);
+  border-radius: 4px; overflow: hidden;
+  position: relative;
 }
-.bar {
-  width: 100%;
-  border-radius: 3px 3px 2px 2px;
+.bar-fill {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 100%; background: #a0ec06;
+  border-radius: 4px;
   transform-origin: bottom;
+  /* Start collapsed */
+  animation: bar-grow 0.6s var(--ease-out) both;
 }
-.bar-label {
-  font-size: 9px;
-  font-family: 'DM Sans', sans-serif;
-  color: rgba(240,237,232,0.22);
+
+@keyframes bar-grow {
+  from { transform: scaleY(0); }
+  /* 'to' state is handled by inline style */
 }
-.bar-label.today { color: #a0ec06; }
 </style>

@@ -1,18 +1,19 @@
 import { ref } from 'vue'
 
-export function useToast() {
-  const visible = ref(false)
-  const message = ref('')
-  let timer: ReturnType<typeof setTimeout>
+const isVisible = ref(false)
+const message   = ref('')
+let timer: ReturnType<typeof setTimeout>
 
+export function useToast() {
   function show(msg: string) {
+    message.value   = msg
+    isVisible.value = true
+
     clearTimeout(timer)
-    message.value = msg
-    visible.value = true
-    timer = setTimeout(() => { visible.value = false }, 2600)
+    timer = setTimeout(() => {
+      isVisible.value = false
+    }, 3000)
   }
 
-  function dismiss() { visible.value = false }
-
-  return { visible, message, show, dismiss }
+  return { isVisible, message, show }
 }

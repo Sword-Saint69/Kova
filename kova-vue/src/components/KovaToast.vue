@@ -1,67 +1,43 @@
 <template>
   <Teleport to="body">
     <Transition name="toast">
-      <div v-if="visible" class="toast">
-        <div class="toast-dot" />
-        <span class="toast-text">{{ message }}</span>
+      <div v-if="isVisible" class="toast-card">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="8" fill="#a0ec06" fill-opacity="0.2"/>
+          <path d="M5 8l2 2 4-4" stroke="#a0ec06" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>{{ message }}</span>
       </div>
     </Transition>
   </Teleport>
 </template>
 
-<script setup>
-import { watch } from 'vue'
-
-const props = defineProps({ message: String, visible: Boolean })
-const emit  = defineEmits(['dismiss'])
-
-watch(() => props.visible, (v) => {
-  if (v) setTimeout(() => emit('dismiss'), 2600)
-})
+<script setup lang="ts">
+import { useToast } from '../composables/useToast'
+const { isVisible, message } = useToast()
 </script>
 
 <style scoped>
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
+.toast-card {
+  position: fixed; bottom: 32px; left: 50%;
   transform: translateX(-50%);
-  background: #111;
-  border: 0.5px solid rgba(160,236,6,0.25);
-  border-radius: 12px;
-  padding: 10px 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  z-index: 1000;
-  white-space: nowrap;
-  pointer-events: none;
-}
-.toast-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: #a0ec06;
-  flex-shrink: 0;
-}
-.toast-text {
-  font-size: 13px;
-  color: #f0ede8;
+  background: #181818;
+  border: 0.5px solid rgba(255,255,255,0.1);
+  border-radius: 99px;
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 8px;
   font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500;
+  color: #f0ede8; z-index: 1000;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 
-/* Toast slide up/down */
 .toast-enter-active {
-  transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out);
+  transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
 }
 .toast-leave-active {
   transition: opacity 0.2s ease-in, transform 0.2s ease-in;
 }
-.toast-enter-from {
-  opacity: 0;
-  transform: translateX(-50%) translateY(20px);
-}
-.toast-leave-to {
-  opacity: 0;
-  transform: translateX(-50%) translateY(12px);
-}
+.toast-enter-from { opacity: 0; transform: translate(-50%, 16px); }
+.toast-leave-to   { opacity: 0; transform: translate(-50%, 10px); }
 </style>

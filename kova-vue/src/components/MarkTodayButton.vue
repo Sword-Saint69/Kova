@@ -5,14 +5,14 @@
     :disabled="marked"
     @click="mark"
   >
-    <Transition name="btn-label" mode="out-in">
+    <Transition name="mark-label" mode="out-in">
       <span v-if="!marked" key="default">Mark today ✓</span>
       <span v-else          key="done">✓ Marked for today</span>
     </Transition>
   </button>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 const marked = ref(false)
 function mark() { marked.value = true }
@@ -36,15 +36,17 @@ function mark() { marked.value = true }
 .mark-btn:hover:not(.marked) { transform: translateY(-1px); }
 .mark-btn:active:not(.marked){ transform: scale(0.97); }
 .mark-btn.marked {
-  background: rgba(160,236,6,0.1);
-  color:       #a0ec06;
+  background: rgba(160,236,6,0.10);
+  color: #a0ec06;
   border-color: rgba(160,236,6,0.3);
   cursor: default;
 }
 
-/* Text crossfade */
-.btn-label-enter-active,
-.btn-label-leave-active { transition: opacity 0.18s ease, transform 0.18s ease; }
-.btn-label-enter-from   { opacity: 0; transform: translateY(6px);  }
-.btn-label-leave-to     { opacity: 0; transform: translateY(-6px); }
+/* Label crossfade */
+.mark-label-enter-active,
+.mark-label-leave-active {
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.mark-label-enter-from { opacity: 0; transform: translateY(7px); }
+.mark-label-leave-to   { opacity: 0; transform: translateY(-7px); }
 </style>
