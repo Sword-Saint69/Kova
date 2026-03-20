@@ -15,7 +15,11 @@ export default defineConfig({
             const setCookie = proxyRes.headers['set-cookie'];
             if (setCookie) {
               proxyRes.headers['set-cookie'] = setCookie.map(cookie => 
-                cookie.replace(/Secure;/gi, '').replace(/SameSite=None;/gi, 'SameSite=Lax;')
+                cookie
+                  .replace(/Secure;/gi, '')
+                  .replace(/SameSite=None;/gi, 'SameSite=Lax;')
+                  .replace(/Domain=[^;]+;/gi, '') // Strip Domain
+                  .replace(/Path=[^;]+;/gi, 'Path=/;') // Force root Path
               );
             }
           });

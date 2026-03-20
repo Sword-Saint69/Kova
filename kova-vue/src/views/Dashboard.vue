@@ -240,16 +240,19 @@ async function fetchDashboardData() {
   try {
     // Try to get session with multiple retries to handle race conditions after login
     let session = null;
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
+      console.log(`Checking session (attempt ${i + 1})...`);
       const sessionResult = await authClient.getSession();
       if (sessionResult.data) {
+        console.log("Session found:", sessionResult.data);
         session = sessionResult.data;
         break;
       }
-      await new Promise(r => setTimeout(r, 800)); // wait and retry
+      await new Promise(r => setTimeout(r, 600)); // wait and retry
     }
     
     if (!session) {
+      console.warn("No session detected after retries. Redirecting to login...");
       router.push('/login');
       return;
     }
