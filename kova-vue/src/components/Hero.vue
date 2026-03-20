@@ -106,10 +106,14 @@ const miniCells = computed(() => {
 </script>
 
 <template>
-  <section class="hero-section relative w-full bg-[#0a0a0a] overflow-hidden">
+  <section class="hero-section relative w-full bg-[#0a0a0a] overflow-hidden" ref="heroEl">
     <div class="hero-inner relative z-10">
+        <!-- ANIMATION: Parallax layers — left moves at 0.35x, right at 0.15x scroll speed -->
         <!-- Left Side -->
-        <div class="hero-left">
+        <div
+          class="hero-left"
+          :style="{ transform: `translateY(${parallaxHeadline}px)`, willChange: 'transform' }"
+        >
             <!-- ANIMATION 16: Headline stagger — fade-up 80ms apart -->
             <div class="space-y-4">
                 <span class="eyebrow-line block text-[11px] font-medium uppercase tracking-[0.15em] text-primary/60">HABIT ENGINEERING</span>
@@ -155,7 +159,11 @@ const miniCells = computed(() => {
         </div>
 
         <!-- Right Side Stats -->
-        <div class="hero-right" ref="statEl">
+        <div
+          class="hero-right"
+          ref="statEl"
+          :style="{ transform: `translateY(${parallaxStat}px)`, willChange: 'transform' }"
+        >
             <!-- ANIMATION: Gradient blob — slow-morphing radial behind the stat -->
             <div class="stat-blob" aria-hidden="true"></div>
 
