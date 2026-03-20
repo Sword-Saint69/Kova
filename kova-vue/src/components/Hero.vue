@@ -50,7 +50,6 @@ const miniCells = computed(() => {
             
             <div class="space-y-1 mb-10 max-w-[560px]">
                 <p class="text-[16px] font-light text-on-surface-variant leading-[4]">Track every habit. See every pattern.</p>
-                <p class="text-[16px] font-light text-on-surface-variant leading[0]">Share your consistency with the world.</p>
             </div>
 
             <div class="flex flex-col sm:flex-row items-center gap-4">
