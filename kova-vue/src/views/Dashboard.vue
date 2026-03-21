@@ -347,6 +347,11 @@ const calendarDays = computed(() => {
   return days;
 });
 
+function getLocalDate(date = new Date()) {
+  const d = date instanceof Date ? date : new Date(date);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 async function fetchDashboardData() {
   loading.value = true;
   try {
@@ -383,11 +388,11 @@ async function fetchDashboardData() {
       userHabits = await sql`SELECT id, name, icon, color FROM "Habit" WHERE "userId" = ${user.value.id} ORDER BY "createdAt" ASC`;
     }
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDate();
     const logData = await sql`SELECT "habitId", "date" FROM "Log" WHERE "userId" = ${user.value.id}`;
     logs.value = logData;
     
-    const completedToday = new Set(logData.filter(l => l.date.toISOString().startsWith(today)).map(l => l.habitId));
+    const completedToday = new Set(logData.filter(l => getLocalDate(l.date) === today).map(l => l.habitId));
     habits.value = userHabits.map(h => ({ ...h, completed: completedToday.has(h.id) }));
 
     calculateStats(logData);
@@ -403,14 +408,14 @@ async function fetchDashboardData() {
 }
 
 function calculateStats(allLogs) {
-  const dates = [...new Set(allLogs.map(l => l.date.toISOString().split('T')[0]))].sort().reverse();
+  const dates = [...new Set(allLogs.map(l => getLocalDate(l.date)))].sort().reverse();
   totalDays.value = dates.length;
   
   // Streak
   let streak = 0;
   let d = new Date();
   while (true) {
-    const dStr = d.toISOString().split('T')[0];
+    const dStr = getLocalDate(d);
     if (dates.includes(dStr)) {
       streak++;
       d.setDate(d.getDate() - 1);
@@ -431,14 +436,14 @@ function processHeatmap(allLogs) {
   
   const counts = {};
   filteredLogs.forEach(l => {
-    const d = l.date.toISOString().split('T')[0];
+    const d = getLocalDate(l.date);
     counts[d] = (counts[d] || 0) + 1;
   });
 
   for (let i = 363; i >= 0; i--) {
     const d = new Date();
     d.setDate(now.getDate() - i);
-    const dStr = d.toISOString().split('T')[0];
+    const dStr = getLocalDate(d);
     cells.push({ date: dStr, count: counts[dStr] || 0 });
   }
   heatmapCells.value = cells;
@@ -456,8 +461,9 @@ function processWeeklyChart(allLogs) {
   Sunday.setHours(23,59,59,999);
 
   allLogs.forEach(l => {
-    if (l.date >= monday && l.date <= Sunday) {
-      let dow = l.date.getDay();
+    const d = l.date instanceof Date ? l.date : new Date(l.date);
+    if (d >= monday && d <= Sunday) {
+      let dow = d.getDay();
       let idx = dow === 0 ? 6 : dow - 1;
       activity[idx]++;
     }
