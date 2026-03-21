@@ -487,23 +487,47 @@ async function fetchDashboardData() {
 }
 
 function calculateStats(allLogs) {
-  const dates = [...new Set(allLogs.map(l => getLocalDate(l.date)))].sort().reverse();
-  totalDays.value = dates.length;
+  const sortedDates = [...new Set(allLogs.map(l => getLocalDate(l.date)))].sort();
+  totalDays.value = sortedDates.length;
   
-  // Streak
-  let streak = 0;
-  let d = new Date();
-  while (true) {
-    const dStr = getLocalDate(d);
-    if (dates.includes(dStr)) {
-      streak++;
-      d.setDate(d.getDate() - 1);
-    } else {
-      break;
-    }
+  if (sortedDates.length === 0) {
+    currentStreak.value = 0;
+    topStreak.value = 0;
+    return;
   }
-  currentStreak.value = streak;
-  topStreak.value = Math.max(streak, totalDays.value > 0 ? totalDays.value + 5 : 0); // Mock top streak for demo feel
+
+  // Current Streak
+  let cStreak = 0;
+  let d = new Date();
+  const dateSet = new Set(sortedDates);
+  while (dateSet.has(getLocalDate(d))) {
+    cStreak++;
+    d.setDate(d.getDate() - 1);
+  }
+  currentStreak.value = cStreak;
+
+  // Top Streak
+  let maxStreak = 0;
+  let currentSeq = 0;
+  let lastDate = null;
+
+  sortedDates.forEach(dateStr => {
+    if (!lastDate) {
+      currentSeq = 1;
+    } else {
+      const prevDate = new Date(lastDate);
+      prevDate.setDate(prevDate.getDate() + 1);
+      if (getLocalDate(prevDate) === dateStr) {
+        currentSeq++;
+      } else {
+        currentSeq = 1;
+      }
+    }
+    maxStreak = Math.max(maxStreak, currentSeq);
+    lastDate = dateStr;
+  });
+
+  topStreak.value = maxStreak;
 }
 
 function processHeatmap(allLogs) {
