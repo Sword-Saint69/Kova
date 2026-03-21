@@ -193,18 +193,18 @@
           <!-- Completion Ring (Row 2-3) -->
           <section class="row-span-2 bg-surface-container-low rounded-xl p-8 flex flex-col items-center justify-center relative border border-white/5">
             <div class="relative w-48 h-48 drop-shadow-[0_0_30px_rgba(177,255,41,0.05)]">
-              <svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
-                <circle class="text-white/[0.03] stroke-current" cx="50" cy="50" fill="transparent" r="42" stroke-width="6"></circle>
-                <circle class="text-primary stroke-current transition-all duration-1000 ease-out" cx="50" cy="50" fill="transparent" r="42" 
-                        stroke-dasharray="263.8" :stroke-dashoffset="263.8 - (263.8 * (efficiency / 100))" 
-                        stroke-linecap="round" stroke-width="8"></circle>
+              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                <circle class="text-white/[0.03] stroke-current" cx="50" cy="50" fill="transparent" r="38" stroke-width="5"></circle>
+                <circle class="text-primary stroke-current transition-all duration-1000 ease-out" cx="50" cy="50" fill="transparent" r="38" 
+                        stroke-dasharray="238.8" :stroke-dashoffset="238.8 - (238.8 * (efficiency / 100))" 
+                        stroke-linecap="round" stroke-width="7"></circle>
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center">
                 <span class="serif-number text-6xl leading-none text-white transition-all duration-500">{{ efficiency }}%</span>
-                <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/20 mt-2">Daily Goal</span>
+                <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/20 mt-3">Daily Goal</span>
               </div>
             </div>
-            <p class="mt-6 text-[11px] font-bold text-white/20 uppercase tracking-[0.4em]">
+            <p class="mt-6 text-[11px] font-bold text-white/30 uppercase tracking-[0.4em]">
               {{ habits.filter(h => h.completed).length }} of {{ habits.length }} completed
             </p>
           </section>
