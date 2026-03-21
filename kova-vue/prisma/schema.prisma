@@ -15,7 +15,7 @@ model User {
   name      String?
   habits    Habit[]
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(dbgenerated("now()")) @updatedAt
 }
 
 model Habit {
@@ -31,7 +31,7 @@ model Habit {
   userId      String
   logs        Log[]
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @default(dbgenerated("now()")) @updatedAt
 }
 
 model Log {
