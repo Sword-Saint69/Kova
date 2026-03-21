@@ -475,7 +475,7 @@ async function toggleHabit(habit) {
   const original = habit.completed;
   habit.completed = !habit.completed;
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDate();
     if (habit.completed) {
       await sql`INSERT INTO "Log" ("id", "habitId", "userId", "date", "value") VALUES (${crypto.randomUUID()}, ${habit.id}, ${user.value.id}, ${today}, 1)`;
     } else {
