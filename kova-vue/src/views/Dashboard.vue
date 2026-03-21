@@ -12,7 +12,10 @@
     <!-- TopNavBar -->
     <nav v-if="!loading" class="bg-[#0e0e0e]/90 border-b border-white/5 fixed top-0 left-0 right-0 z-50">
       <div class="flex justify-between items-center w-full px-6 py-4 max-w-[1440px] mx-auto">
-        <div class="text-2xl font-bold text-white tracking-tighter">KoVA</div>
+        <div class="flex items-center gap-2">
+          <img src="/logo-full.png" alt="KoVA Logo" class="w-8 h-8 object-contain">
+          <div class="text-2xl font-bold text-white tracking-tighter">KoVA</div>
+        </div>
         <div class="hidden md:flex items-center space-x-2">
           <RouterLink to="/dashboard" class="text-secondary bg-secondary/10 rounded-full px-4 py-1.5 font-semibold text-sm">Dashboard</RouterLink>
           <a class="text-white/40 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium" href="#">Habits</a>
@@ -216,7 +219,7 @@
         <!-- Sticky Footer Row -->
         <section class="md:col-span-4 bg-surface-container-low rounded-xl p-8 flex items-center border border-white/5 shadow-inner">
           <p class="font-headline text-xl text-white/50 leading-relaxed italic pr-6 border-r border-white/5">
-            "We are what we repeatedly do. Excellence, then, is not an act, but a habit."
+            {{ currentQuote }}
           </p>
           <div class="pl-6 flex-shrink-0">
              <span class="material-symbols-outlined text-white/10 text-[40px]">format_quote</span>
@@ -249,7 +252,10 @@
     <!-- Footer -->
     <footer v-if="!loading" class="bg-background border-t border-white/5 mt-12 py-16 px-8">
       <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
-        <div class="text-2xl font-black text-white/20 tracking-[0.5em] uppercase">KoVA</div>
+        <div class="flex flex-col items-center gap-4">
+          <img src="/logo-full.png" alt="KoVA Logo" class="w-12 h-12 opacity-20 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
+          <div class="text-2xl font-black text-white/20 tracking-[0.5em] uppercase text-center ml-2">KoVA</div>
+        </div>
         <div class="flex gap-12 text-white/30 text-[11px] font-black uppercase tracking-[0.4em]">
           <a href="#" class="hover:text-primary transition-all">Privacy</a>
           <a href="#" class="hover:text-primary transition-all">Terms</a>
@@ -348,6 +354,19 @@ const showRetry = ref(false);
 const logs = ref([]);
 const selectedFilterId = ref(null);
 const isShareModalOpen = ref(false);
+
+// Quotes
+const quotes = [
+  "\"The DNA of mastery is composed of small, daily repetitions.\"",
+  "\"Excellence is not an act, but a habit.\"",
+  "\"Discipline is the bridge between goals and accomplishment.\"",
+  "\"Your habits are the secret to your future.\"",
+  "\"Consistency transforms average into elite.\"",
+  "\"Mastery is a journey, not a destination.\"",
+  "\"Small wins daily, massive results eventually.\"",
+  "\"The only way to achieve the impossible is to believe it is possible.\""
+];
+const currentQuote = ref(quotes[Math.floor(Math.random() * quotes.length)]);
 
 // Stats
 const totalDays = ref(0);
