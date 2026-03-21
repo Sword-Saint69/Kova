@@ -226,6 +226,14 @@ async function handleCreate() {
       return;
     }
     const userId = session.data.user.id;
+    const userName = session.data.user.name || session.data.user.email.split('@')[0];
+    
+    // Sync User to public schema (Foreign Key Requirement)
+    await sql`
+      INSERT INTO "User" ("id", "email", "name") 
+      VALUES (${userId}, ${session.data.user.email}, ${userName})
+      ON CONFLICT ("id") DO UPDATE SET "name" = EXCLUDED."name"
+    `;
     
     const id = crypto.randomUUID();
     const now = new Date();

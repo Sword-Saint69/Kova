@@ -360,6 +360,13 @@ async function fetchDashboardData() {
       name: sessionResp.data.user.name || sessionResp.data.user.email.split('@')[0] 
     };
 
+    // Ensure user exists in "public.User" table (Sync)
+    await sql`
+      INSERT INTO "User" ("id", "email", "name") 
+      VALUES (${user.value.id}, ${sessionResp.data.user.email}, ${user.value.name})
+      ON CONFLICT ("id") DO UPDATE SET "name" = EXCLUDED."name"
+    `;
+
     // Habits
     let userHabits = await sql`SELECT id, name, icon, color FROM "Habit" WHERE "userId" = ${user.value.id} ORDER BY "createdAt" ASC`;
     if (userHabits.length === 0) {
