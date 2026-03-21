@@ -150,7 +150,7 @@
           </div>
           <div class="space-y-4 flex-1 overflow-y-auto no-scrollbar pr-2">
             <div v-for="habit in habits" :key="habit.id" 
-                 @click="toggleHabit(habit)"
+                 @click="$router.push(`/habits/${habit.id}`)"
                  class="flex items-center justify-between group cursor-pointer p-4 rounded-xl border border-transparent hover:bg-white/[0.02] hover:border-white/5 transition-all active:scale-[0.98]">
               <div class="flex items-center gap-5">
                 <div :class="['w-2.5 h-2.5 rounded-full transition-all duration-500 shadow-sm', habit.completed ? 'bg-primary shadow-primary/40' : 'bg-outline-variant']"></div>
@@ -162,7 +162,7 @@
                 <button @click.stop="deleteHabit(habit.id)" class="opacity-0 group-hover:opacity-100 p-1.5 text-white/20 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all">
                   <span class="material-symbols-outlined text-[18px]">delete</span>
                 </button>
-                <div :class="[
+                <div @click.stop="toggleHabit(habit)" :class="[
                   'w-7 h-7 rounded-lg border-2 transition-all duration-500 flex items-center justify-center',
                   habit.completed ? 'border-primary bg-primary/10' : 'border-outline-variant group-hover:border-primary/40'
                 ]">
