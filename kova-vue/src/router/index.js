@@ -7,6 +7,7 @@ const routes = [
   { path: '/login',     component: () => import('../views/Login.vue')    },
   { path: '/dashboard', component: () => import('../views/Dashboard.vue'), meta: { requiresAuth: true } },
   { path: '/habits/new', component: () => import('../views/NewHabit.vue'), meta: { requiresAuth: true } },
+  { path: '/habits/:id', component: () => import('../views/HabitDetail.vue'), meta: { requiresAuth: true } },
 ];
 
 const router = createRouter({
