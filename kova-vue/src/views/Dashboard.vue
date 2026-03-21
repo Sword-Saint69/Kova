@@ -200,7 +200,7 @@
                         stroke-linecap="round" stroke-width="7"></circle>
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="serif-number text-6xl leading-none text-white transition-all duration-500">{{ efficiency }}%</span>
+                <span class="serif-number text-5xl leading-none text-white transition-all duration-500">{{ efficiency }}%</span>
                 <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/20 mt-3">Daily Goal</span>
               </div>
             </div>
