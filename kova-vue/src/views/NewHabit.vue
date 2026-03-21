@@ -227,9 +227,11 @@ async function handleCreate() {
     }
     const userId = session.data.user.id;
     
+    const id = crypto.randomUUID();
+    const now = new Date();
     await sql`
-      INSERT INTO "Habit" ("name", "icon", "color", "frequency", "reminderTime", "dailyGoal", "userId") 
-      VALUES (${habitName.value}, ${selectedIcon.value}, ${selectedColor.value}, ${frequency.value}, ${reminderTime.value}, ${dailyGoal.value}, ${userId})
+      INSERT INTO "Habit" ("id", "name", "icon", "color", "frequency", "reminderTime", "dailyGoal", "userId", "updatedAt") 
+      VALUES (${id}, ${habitName.value}, ${selectedIcon.value}, ${selectedColor.value}, ${frequency.value}, ${reminderTime.value}, ${dailyGoal.value}, ${userId}, ${now})
     `;
     
     router.push('/dashboard');

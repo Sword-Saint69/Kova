@@ -370,8 +370,8 @@ async function fetchDashboardData() {
         { name: 'No Sugar', icon: 'nutrition' }
       ];
       for (const h of defaults) {
-        await sql`INSERT INTO "Habit" ("name", "icon", "color", "frequency", "reminderTime", "dailyGoal", "userId") 
-                  VALUES (${h.name}, ${h.icon}, '#b1ff29', 'Daily', '08:00', 1, ${user.value.id})`;
+        await sql`INSERT INTO "Habit" ("id", "name", "icon", "color", "frequency", "reminderTime", "dailyGoal", "userId", "updatedAt") 
+                  VALUES (${crypto.randomUUID()}, ${h.name}, ${h.icon}, '#b1ff29', 'Daily', '08:00', 1, ${user.value.id}, ${new Date()})`;
       }
       userHabits = await sql`SELECT id, name, icon, color FROM "Habit" WHERE "userId" = ${user.value.id} ORDER BY "createdAt" ASC`;
     }
@@ -464,7 +464,7 @@ async function toggleHabit(habit) {
   try {
     const today = new Date().toISOString().split('T')[0];
     if (habit.completed) {
-      await sql`INSERT INTO "Log" ("habitId", "userId", "date", "value") VALUES (${habit.id}, ${user.value.id}, ${today}, 1)`;
+      await sql`INSERT INTO "Log" ("id", "habitId", "userId", "date", "value") VALUES (${crypto.randomUUID()}, ${habit.id}, ${user.value.id}, ${today}, 1)`;
     } else {
       await sql`DELETE FROM "Log" WHERE "habitId" = ${habit.id} AND "userId" = ${user.value.id} AND "date"::date = ${today}::date`;
     }
@@ -487,7 +487,7 @@ async function seedData() {
       const d = new Date();
       d.setDate(now.getDate() - Math.floor(Math.random() * 365));
       const habit = habits.value[Math.floor(Math.random() * habits.value.length)];
-      await sql`INSERT INTO "Log" ("habitId", "userId", "date", "value") VALUES (${habit.id}, ${user.value.id}, ${d.toISOString()}, 1)`;
+      await sql`INSERT INTO "Log" ("id", "habitId", "userId", "date", "value") VALUES (${crypto.randomUUID()}, ${habit.id}, ${user.value.id}, ${d.toISOString()}, 1)`;
     }
     await fetchDashboardData();
   } catch (err) {
