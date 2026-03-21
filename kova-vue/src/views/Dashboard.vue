@@ -276,6 +276,7 @@ const loading = ref(true);
 const showRetry = ref(false);
 const logs = ref([]);
 const selectedFilterId = ref(null);
+const isShareModalOpen = ref(false);
 
 // Stats
 const totalDays = ref(0);
