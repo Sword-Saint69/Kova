@@ -10,7 +10,7 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id @default(dbgenerated("gen_random_uuid()::text"))
   email     String   @unique
   name      String?
   habits    Habit[]
@@ -19,7 +19,7 @@ model User {
 }
 
 model Habit {
-  id          String   @id @default(cuid())
+  id          String   @id @default(dbgenerated("gen_random_uuid()::text"))
   name        String
   description String?
   icon        String?  @default("self_improvement")
@@ -35,7 +35,7 @@ model Habit {
 }
 
 model Log {
-  id        String   @id @default(cuid())
+  id        String   @id @default(dbgenerated("gen_random_uuid()::text"))
   date      DateTime @default(now())
   value     Int      @default(1)
   habit     Habit    @relation(fields: [habitId], references: [id])
