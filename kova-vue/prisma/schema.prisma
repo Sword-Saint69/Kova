@@ -38,6 +38,7 @@ model Log {
   id        String   @id @default(dbgenerated("gen_random_uuid()::text"))
   date      DateTime @default(now())
   value     Int      @default(1)
+  note      String?
   habit     Habit    @relation(fields: [habitId], references: [id])
   habitId   String
   userId    String?

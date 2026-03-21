@@ -35,12 +35,18 @@
             <span class="material-symbols-outlined">arrow_back</span>
           </button>
           <div class="flex items-center gap-4">
-            <h1 class="font-headline italic text-[28px] text-white leading-none">{{ habit.name }}</h1>
+            <input v-if="isEditing" 
+                   v-model="editName" 
+                   @blur="saveName"
+                   @keyup.enter="saveName"
+                   class="font-headline italic text-[28px] bg-white/5 border-b border-primary text-white leading-none outline-none px-2 py-1 w-64"
+                   autoFocus>
+            <h1 v-else class="font-headline italic text-[28px] text-white leading-none">{{ habit.name }}</h1>
             <div :style="{ backgroundColor: habit.color }" class="w-3 h-3 rounded-full shadow-[0_0_12px_rgba(177,255,41,0.4)]"></div>
           </div>
         </div>
-        <button class="px-6 py-2 rounded-full border-[0.5px] border-white/10 text-primary text-sm font-medium hover:bg-primary/5 transition-all">
-          Edit
+        <button @click="isEditing = !isEditing" class="px-6 py-2 rounded-full border-[0.5px] border-white/10 text-primary text-sm font-medium hover:bg-primary/5 transition-all">
+          {{ isEditing ? 'Cancel' : 'Edit' }}
         </button>
       </header>
 
@@ -72,7 +78,7 @@
       <!-- Stats Row -->
       <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
         <!-- Current Streak -->
-        <div class="bg-surface-container-low rounded-xl p-6 border-l-2 border-primary">
+        <div class="bg-surface-container-low rounded-xl p-6 shadow-sm">
           <span class="text-xs uppercase tracking-widest text-on-surface-variant font-medium block mb-2">Current Streak</span>
           <span class="font-headline italic text-5xl text-primary">{{ currentStreak }}</span>
         </div>
@@ -87,7 +93,7 @@
           <span class="font-headline italic text-5xl text-white">{{ totalCompletions }}</span>
         </div>
         <!-- Completion Rate -->
-        <div class="bg-surface-container-low rounded-xl p-6 border-l-2 border-primary">
+        <div class="bg-surface-container-low rounded-xl p-6 shadow-sm">
           <span class="text-xs uppercase tracking-widest text-on-surface-variant font-medium block mb-2">Success Rate</span>
           <div class="flex items-baseline gap-1">
             <span class="font-headline italic text-5xl text-primary">{{ successRate }}</span>
@@ -194,6 +200,8 @@ const heatmapCells = ref([]);
 const monthlyActivity = ref([]);
 const recentReflections = ref([]);
 const completedToday = ref(false);
+const isEditing = ref(false);
+const editName = ref('');
 
 function getLocalDate(date = new Date()) {
   const d = date instanceof Date ? date : new Date(date);
@@ -211,6 +219,7 @@ async function fetchHabitData() {
     const [h] = await sql`SELECT * FROM "Habit" WHERE "id" = ${habitId}`;
     if (!h) return router.push('/dashboard');
     habit.value = h;
+    editName.value = h.name;
 
     const allLogs = await sql`SELECT * FROM "Log" WHERE "habitId" = ${habitId} ORDER BY "date" ASC`;
     logs.value = allLogs;
@@ -269,9 +278,13 @@ function calculateAllStats(allLogs) {
 
   // Success Rate (% of days since created)
   const created = new Date(habit.value.createdAt);
-  const diffTime = Math.abs(new Date() - created);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
-  successRate.value = Math.round((sortedDates.length / diffDays) * 100);
+  created.setHours(0, 0, 0, 0);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const diffTime = Math.abs(now - created);
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  const rate = Math.round((sortedDates.length / diffDays) * 100);
+  successRate.value = Math.min(rate, 100);
 }
 
 function processHeatmap(allLogs) {
@@ -298,16 +311,35 @@ function processMonthlyChart(allLogs) {
   const now = new Date();
   
   for (let i = 11; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const m = d.getMonth();
-    const y = d.getFullYear();
+    const target = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const m = target.getMonth();
+    const y = target.getFullYear();
+    
+    // Use local date strings for robust counting
     const count = allLogs.filter(l => {
       const ld = new Date(l.date);
       return ld.getMonth() === m && ld.getFullYear() === y;
     }).length;
-    data.push({ label: monthNames[m], count, percent: Math.min((count / 31) * 100, 100) });
+    
+    // Calculate max days in that month
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    data.push({ label: monthNames[m], count, percent: Math.max((count / daysInMonth) * 100, 5) });
   }
   monthlyActivity.value = data;
+}
+
+async function saveName() {
+  if (!editName.value.trim() || editName.value === habit.value.name) {
+    isEditing.value = false;
+    return;
+  }
+  try {
+    await sql`UPDATE "Habit" SET "name" = ${editName.value} WHERE "id" = ${habit.value.id}`;
+    habit.value.name = editName.value;
+    isEditing.value = false;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 function processReflections(allLogs) {
