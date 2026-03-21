@@ -158,11 +158,16 @@
                   {{ habit.name }}
                 </span>
               </div>
-              <div :class="[
-                'w-7 h-7 rounded-lg border-2 transition-all duration-500 flex items-center justify-center',
-                habit.completed ? 'border-primary bg-primary/10' : 'border-outline-variant group-hover:border-primary/40'
-              ]">
-                <span v-if="habit.completed" class="material-symbols-outlined text-primary text-[20px] font-black">check</span>
+              <div class="flex items-center gap-3">
+                <button @click.stop="deleteHabit(habit.id)" class="opacity-0 group-hover:opacity-100 p-1.5 text-white/20 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all">
+                  <span class="material-symbols-outlined text-[18px]">delete</span>
+                </button>
+                <div :class="[
+                  'w-7 h-7 rounded-lg border-2 transition-all duration-500 flex items-center justify-center',
+                  habit.completed ? 'border-primary bg-primary/10' : 'border-outline-variant group-hover:border-primary/40'
+                ]">
+                  <span v-if="habit.completed" class="material-symbols-outlined text-primary text-[20px] font-black">check</span>
+                </div>
               </div>
             </div>
           </div>
@@ -622,6 +627,17 @@ async function seedData() {
 async function handleLogout() {
   await authClient.signOut();
   router.push('/login');
+}
+
+async function deleteHabit(habitId) {
+  if (!confirm('Are you sure you want to delete this habit and all its history?')) return;
+  try {
+    await sql`DELETE FROM "Log" WHERE "habitId" = ${habitId}`;
+    await sql`DELETE FROM "Habit" WHERE "id" = ${habitId}`;
+    await fetchDashboardData();
+  } catch (err) {
+    console.error("Delete error:", err);
+  }
 }
 
 function handleQuickLog() {
