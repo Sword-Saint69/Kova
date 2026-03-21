@@ -223,7 +223,7 @@
           </div>
         </section>
 
-        <section class="md:col-span-4 bg-secondary rounded-xl p-8 flex items-center justify-between group cursor-pointer hover:shadow-2xl hover:shadow-secondary/20 transition-all active:scale-[0.98]">
+        <section @click="isShareModalOpen = true" class="md:col-span-4 bg-secondary rounded-xl p-8 flex items-center justify-between group cursor-pointer hover:shadow-2xl hover:shadow-secondary/20 transition-all active:scale-[0.98]">
           <div class="flex items-center gap-5">
             <span class="material-symbols-outlined text-black font-extrabold text-3xl">share</span>
             <div class="flex flex-col">
@@ -260,6 +260,77 @@
         </div>
       </div>
     </footer>
+
+    <!-- Share Progress Modal -->
+    <Teleport to="body">
+      <div v-if="isShareModalOpen" class="fixed inset-0 z-[200] flex items-center justify-center p-6 sm:p-12 overflow-y-auto">
+        <div class="absolute inset-0 bg-[#0a0a0a]/90 backdrop-blur-xl" @click="isShareModalOpen = false"></div>
+        <div class="relative w-full max-w-[420px] bg-[#0d0d0d] rounded-[48px] border border-white/5 shadow-2xl overflow-hidden group">
+          <!-- Card Glow -->
+          <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 blur-[100px]"></div>
+          
+          <!-- Card Header -->
+          <div class="p-10 pb-4 flex justify-between items-start relative z-10">
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-2">Mastery Profile</p>
+              <h3 class="text-4xl font-headline italic text-white leading-none capitalize mb-2">{{ user.name }}</h3>
+              <p class="text-[12px] font-bold text-white/40 uppercase tracking-[0.2em]">{{ currentLevel }}</p>
+            </div>
+            <button @click="isShareModalOpen = false" class="text-white/20 hover:text-white transition-colors bg-white/5 w-10 h-10 rounded-full flex items-center justify-center border border-white/5">
+              <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+
+          <!-- Card Content -->
+          <div class="px-10 py-8 space-y-10 relative z-10">
+            <!-- Stats -->
+            <div class="grid grid-cols-2 gap-5">
+              <div class="bg-white/5 border border-white/5 p-6 rounded-[32px] hover:bg-white/[0.08] transition-colors">
+                <p class="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 mb-3">Streak</p>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-5xl font-headline italic text-white">{{ currentStreak }}</span>
+                  <span class="text-[11px] font-bold text-white/40 uppercase">Days</span>
+                </div>
+              </div>
+              <div class="bg-white/5 border border-white/5 p-6 rounded-[32px] hover:bg-white/[0.08] transition-colors text-right">
+                <p class="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 mb-3">Mastery</p>
+                <div class="flex items-baseline gap-1 justify-end">
+                  <span class="text-5xl font-headline italic text-primary">{{ efficiency }}</span>
+                  <span class="text-[11px] font-bold text-primary/40 uppercase">%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mini Heatmap -->
+            <div class="p-8 bg-black/40 rounded-[40px] border border-white/5">
+               <p class="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-5 text-center">Activity Sequence (49d)</p>
+               <div class="grid grid-cols-7 gap-2">
+                 <div 
+                   v-for="cell in heatmapCells.slice(-49)" :key="cell.date"
+                   class="aspect-square rounded-[4px] transition-all"
+                   :class="getIntensityClass(cell.count)"
+                 ></div>
+               </div>
+            </div>
+          </div>
+
+          <!-- Card Footer -->
+          <div class="p-10 pt-6 flex items-center justify-between border-t border-white/5 relative z-10 bg-[#0d0d0d]">
+            <div class="text-2xl font-black text-white/20 tracking-[0.4em] uppercase">KoVA</div>
+            <div class="text-[9px] font-black text-white/10 uppercase tracking-[0.4em] text-right">Mastery through<br>Consistency</div>
+          </div>
+
+          <!-- Interaction Overlay -->
+          <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity"></div>
+        </div>
+        
+        <!-- Action Toolbar -->
+        <div class="fixed bottom-12 left-1/2 -translate-x-1/2 flex gap-4 z-[210]">
+          <button @click="isShareModalOpen = false" class="bg-white text-black px-10 py-4 rounded-full font-bold text-[12px] uppercase tracking-[0.2em] shadow-2xl hover:scale-105 active:scale-95 transition-all">Download Card</button>
+          <button @click="isShareModalOpen = false" class="bg-white/10 backdrop-blur-xl border border-white/10 text-white px-10 py-4 rounded-full font-bold text-[12px] uppercase tracking-[0.2em] hover:bg-white/20 transition-all">Copy Link</button>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -307,6 +378,13 @@ const activeHabitsCount = computed(() => habits.value.filter(h => h.completed).l
 const efficiency = computed(() => {
   if (habits.value.length === 0) return 0;
   return Math.round((activeHabitsCount.value / habits.value.length) * 100);
+});
+
+const currentLevel = computed(() => {
+  if (totalDays.value < 5) return "The Aspirant";
+  if (totalDays.value < 15) return "The Traveler";
+  if (totalDays.value < 30) return "The Disciplined";
+  return "The Master";
 });
 
 const currentDOW = computed(() => {
