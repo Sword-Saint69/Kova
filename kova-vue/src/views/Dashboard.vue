@@ -471,20 +471,7 @@ async function fetchDashboardData() {
     `;
 
     // Habits
-    let userHabits = await sql`SELECT id, name, icon, color FROM "Habit" WHERE "userId" = ${user.value.id} ORDER BY "createdAt" ASC`;
-    if (userHabits.length === 0) {
-      const defaults = [
-        { name: 'Morning Meditation', icon: 'self_improvement' },
-        { name: '4km Run', icon: 'directions_run' },
-        { name: 'Deep Work Block', icon: 'psychology' },
-        { name: 'No Sugar', icon: 'nutrition' }
-      ];
-      for (const h of defaults) {
-        await sql`INSERT INTO "Habit" ("id", "name", "icon", "color", "frequency", "reminderTime", "dailyGoal", "userId", "updatedAt") 
-                  VALUES (${crypto.randomUUID()}, ${h.name}, ${h.icon}, '#b1ff29', 'Daily', '08:00', 1, ${user.value.id}, ${new Date()})`;
-      }
-      userHabits = await sql`SELECT id, name, icon, color FROM "Habit" WHERE "userId" = ${user.value.id} ORDER BY "createdAt" ASC`;
-    }
+    const userHabits = await sql`SELECT id, name, icon, color FROM "Habit" WHERE "userId" = ${user.value.id} ORDER BY "createdAt" ASC`;
 
     const today = getLocalDate();
     const logData = await sql`SELECT "habitId", "date" FROM "Log" WHERE "userId" = ${user.value.id}`;
