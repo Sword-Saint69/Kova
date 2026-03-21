@@ -40,5 +40,6 @@ model Log {
   value     Int      @default(1)
   habit     Habit    @relation(fields: [habitId], references: [id])
   habitId   String
+  userId    String?
   createdAt DateTime @default(now())
 }
