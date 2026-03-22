@@ -701,6 +701,10 @@ function processWeeklyChart(allLogs) {
 }
 
 async function toggleHabit(habit) {
+  // 23. Log Success Flash
+  successFlash.value = true;
+  setTimeout(() => successFlash.value = false, 800);
+
   const original = habit.completed;
   habit.completed = !habit.completed;
   const today = getLocalDate();
@@ -753,6 +757,10 @@ async function deleteHabit(habitId) {
 }
 
 function handleQuickLog() {
+  // 29. Sync Spin
+  isSyncing.value = true;
+  setTimeout(() => isSyncing.value = false, 1000);
+
   const h = habits.value.find(h => !h.completed);
   if (h) toggleHabit(h);
 }
