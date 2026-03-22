@@ -38,7 +38,8 @@
       </div>
     </nav>
 
-    <main v-if="!loading" class="pt-24 pb-12 px-6 max-w-[1440px] mx-auto">
+    <transition name="page" appear>
+      <main v-if="!loading" class="pt-24 pb-12 px-6 max-w-[1440px] mx-auto">
       <!-- Header -->
       <header class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
         <div>
@@ -269,6 +270,7 @@
         </section>
       </div>
     </main>
+    </transition>
 
     <!-- Footer -->
     <footer v-if="!loading" class="bg-background border-t border-white/5 mt-12 py-16 px-8">
