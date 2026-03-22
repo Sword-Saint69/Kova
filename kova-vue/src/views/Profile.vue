@@ -142,27 +142,30 @@
           <p class="font-sans text-[12px] uppercase tracking-widest text-on-surface-variant">
             Tracked with perfection · kova.app
           </p>
-          <div class="flex gap-6 mt-4">
-            <a class="text-white/40 hover:text-primary transition-colors text-[10px] uppercase tracking-widest" href="#">Privacy</a>
-            <a class="text-white/40 hover:text-primary transition-colors text-[10px] uppercase tracking-widest" href="#">Terms</a>
-            <a class="text-white/40 hover:text-primary transition-colors text-[10px] uppercase tracking-widest" href="#">Support</a>
+          <!-- Logout Section -->
+          <div class="mt-8 flex justify-center pb-8 border-b border-white/5">
+            <button @click="logout" class="flex items-center gap-2 px-6 py-2 bg-white/5 hover:bg-red-500/10 text-white/40 hover:text-red-400 border border-white/5 hover:border-red-500/20 rounded-full transition-all text-[10px] font-black uppercase tracking-[0.2em] group">
+              <span class="material-symbols-outlined text-[18px]">logout</span>
+              Sign Out of Protocol
+            </button>
           </div>
         </div>
       </footer>
     </main>
 
     <!-- Global Footer -->
-    <footer class="bg-[#0e0e0e] border-t border-white/5">
-      <div class="flex flex-col gap-8 w-full px-8 py-12 max-w-7xl mx-auto items-center md:items-start">
-        <img src="/logo-full.png" class="h-10 w-auto grayscale opacity-50 contrast-125" alt="KoVA Logo">
-        <div class="flex flex-wrap justify-center md:justify-start gap-8">
-          <a class="text-white/40 hover:text-[#b1ff29] transition-colors duration-300 font-sans text-[12px] uppercase tracking-widest" href="#">Privacy</a>
-          <a class="text-white/40 hover:text-[#b1ff29] transition-colors duration-300 font-sans text-[12px] uppercase tracking-widest" href="#">Terms</a>
-          <a class="text-white/40 hover:text-[#b1ff29] transition-colors duration-300 font-sans text-[12px] uppercase tracking-widest" href="#">Support</a>
-          <a class="text-white/40 hover:text-[#b1ff29] transition-colors duration-300 font-sans text-[12px] uppercase tracking-widest" href="#">Press</a>
+    <footer v-if="!loading" class="bg-background border-t border-white/5 mt-12 py-16 px-8">
+      <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+        <div class="flex flex-col items-center gap-4">
+          <img src="/logo-full.png" alt="KoVA Logo" class="h-10 w-auto opacity-20 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer" @click="$router.push('/dashboard')">
         </div>
-        <div class="text-white/40 font-sans text-[12px] uppercase tracking-widest">
-          © 2024 KoVA. Made with obsession.
+        <div class="flex gap-12 text-white/30 text-[11px] font-black uppercase tracking-[0.4em]">
+          <a href="#" class="hover:text-primary transition-all">Privacy</a>
+          <a href="#" class="hover:text-primary transition-all">Terms</a>
+          <a href="#" class="hover:text-primary transition-all">Support</a>
+        </div>
+        <div class="text-[10px] font-bold text-white/10 uppercase tracking-widest">
+          © 2024 KoVA Labs. All rights reserved.
         </div>
       </div>
     </footer>
@@ -177,6 +180,11 @@ import { authClient } from '../utils/auth';
 
 const router = useRouter();
 const sql = neon(import.meta.env.VITE_DATABASE_URL);
+
+async function logout() {
+  await authClient.signOut();
+  router.push('/login');
+}
 
 const user = ref(null);
 const loading = ref(true);
