@@ -18,7 +18,6 @@
         </div>
         <div class="hidden md:flex items-center space-x-2">
           <RouterLink to="/dashboard" class="text-secondary bg-secondary/10 rounded-full px-4 py-1.5 font-semibold text-sm">Dashboard</RouterLink>
-          <RouterLink to="/dashboard" class="text-white/40 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium">Habits</RouterLink>
           <a class="text-white/40 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium" href="#">Analytics</a>
           <RouterLink to="/profile" class="text-white/40 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium">Profile</RouterLink>
         </div>
@@ -468,7 +467,8 @@ async function fetchDashboardData() {
     }
     user.value = { 
       id: sessionResp.data.user.id, 
-      name: sessionResp.data.user.name || sessionResp.data.user.email.split('@')[0] 
+      name: sessionResp.data.user.name || sessionResp.data.user.email.split('@')[0],
+      image: sessionResp.data.user.image
     };
 
     // Ensure user exists in "public.User" table (Sync)
