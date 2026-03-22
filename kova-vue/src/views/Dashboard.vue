@@ -1,10 +1,14 @@
 <template>
   <div class="min-h-screen bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary bg-grain">
     <!-- Loading Overlay -->
-    <div v-if="loading" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a] gap-6">
-      <div class="spinner !w-12 !h-12 !border-4"></div>
-      <p class="text-white/40 uppercase tracking-[0.3em] text-[10px] animate-pulse">Initializing Protocol...</p>
-      <button v-if="showRetry" @click="fetchDashboardData" class="mt-4 px-6 py-2 bg-white/5 border border-white/10 rounded-full text-white/60 text-xs hover:bg-white/10 transition-all">
+    <div v-if="loading" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a] gap-6 overflow-hidden">
+      <!-- 7. Skeleton Shimmer Background -->
+      <div class="absolute inset-0 opacity-5">
+        <div class="w-full h-full bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
+      </div>
+      <div class="spinner !w-12 !h-12 !border-4 relative z-10"></div>
+      <p class="text-white/40 uppercase tracking-[0.3em] text-[10px] animate-pulse relative z-10">Initializing Protocol...</p>
+      <button v-if="showRetry" @click="fetchDashboardData" class="mt-4 px-6 py-2 bg-white/5 border border-white/10 rounded-full text-white/60 text-xs hover:bg-white/10 transition-all relative z-10">
         Detection taking too long? Retry manually.
       </button>
     </div>
@@ -85,9 +89,10 @@
           
           <div class="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto no-scrollbar py-4 z-10">
             <div 
-              v-for="cell in heatmapCells" :key="cell.date"
-              class="w-2.5 h-2.5 rounded-[2px] transition-all duration-500 hover:scale-125 hover:z-20 border border-white/5"
+              v-for="(cell, i) in heatmapCells" :key="cell.date"
+              class="w-2.5 h-2.5 rounded-[2px] transition-all duration-500 hover:scale-125 hover:z-20 border border-white/5 animate-fade-in"
               :class="getIntensityClass(cell.count)"
+              :style="{ animationDelay: `${100 + (i * 2)}ms` }"
               :title="`${cell.date}: ${cell.count} habits`"
             ></div>
           </div>
@@ -200,7 +205,7 @@
             <div class="relative w-48 h-48 drop-shadow-[0_0_30px_rgba(177,255,41,0.05)]">
               <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                 <circle class="text-white/[0.03] stroke-current" cx="50" cy="50" fill="transparent" r="38" stroke-width="5"></circle>
-                <circle class="text-primary stroke-current transition-all duration-1000 ease-out" cx="50" cy="50" fill="transparent" r="38" 
+                <circle class="text-primary stroke-current transition-all duration-[2000ms] ease-out-expo" cx="50" cy="50" fill="transparent" r="38" 
                         stroke-dasharray="238.8" :stroke-dashoffset="238.8 - (238.8 * (efficiency / 100))" 
                         stroke-linecap="round" stroke-width="7"></circle>
               </svg>
@@ -750,5 +755,33 @@ onMounted(fetchDashboardData);
 @keyframes typewriterChar {
   from { opacity: 0; transform: translateX(-5px); filter: blur(2px); }
   to { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out both;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in-right {
+  animation: slideInRight 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+}
+
+.ease-out-expo {
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
 }
 </style>
