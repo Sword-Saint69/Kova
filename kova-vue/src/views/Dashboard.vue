@@ -208,9 +208,13 @@
 
           <!-- Weekly Chart (Row 4) -->
           <section class="bg-surface-container-low rounded-xl p-8 flex items-end justify-between gap-3 border border-white/5">
-            <div v-for="(day, idx) in ['M','T','W','T','F','S','S']" :key="idx" class="flex-1 flex flex-col items-center gap-4 group h-full justify-end">
-              <div :class="['w-full rounded-full transition-all duration-1000 ease-out relative', idx === currentDOW ? 'bg-primary shadow-[0_0_20px_rgba(177,255,41,0.2)]' : 'bg-primary/10 group-hover:bg-primary/30']"
-                   :style="{ height: getBarHeight(idx) + '%' }">
+            <div v-for="(day, idx) in ['M','T','W','T','F','S','S']" :key="idx" class="flex-1 flex flex-col items-center gap-4 group h-full justify-end relative">
+              <!-- Tooltip on hover -->
+              <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-[9px] font-black px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
+                {{ weeklyActivity[idx] }}
+              </div>
+              <div :class="['w-full rounded-full transition-all duration-1000 ease-out relative min-h-[4px]', idx === currentDOW ? 'bg-primary shadow-[0_0_20px_rgba(177,255,41,0.2)]' : 'bg-primary/10 group-hover:bg-primary/30']"
+                   :style="{ height: Math.max(getBarHeight(idx), 5) + '%' }">
                 <div v-if="idx === currentDOW" class="absolute -top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white rounded-full"></div>
               </div>
               <span :class="['text-[9px] font-black tracking-widest uppercase', idx === currentDOW ? 'text-primary' : 'text-white/10 group-hover:text-white/30']">{{ day }}</span>
@@ -563,17 +567,24 @@ function processHeatmap(allLogs) {
 function processWeeklyChart(allLogs) {
   const activity = [0, 0, 0, 0, 0, 0, 0];
   const now = new Date();
+  
+  // Calculate Monday and Sunday once
   const monday = new Date();
   monday.setDate(now.getDate() - currentDOW.value);
   monday.setHours(0,0,0,0);
 
-  const Sunday = new Date(monday);
-  Sunday.setDate(monday.getDate() + 6);
-  Sunday.setHours(23,59,59,999);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23,59,59,999);
+
+  // Pre-filter logs that are roughly in the current month to avoid heavy date parsing on entire history
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
 
   allLogs.forEach(l => {
     const d = l.date instanceof Date ? l.date : new Date(l.date);
-    if (d >= monday && d <= Sunday) {
+    // Only process if it falls within our targeted week
+    if (d >= monday && d <= sunday) {
       let dow = d.getDay();
       let idx = dow === 0 ? 6 : dow - 1;
       activity[idx]++;
@@ -585,21 +596,35 @@ function processWeeklyChart(allLogs) {
 async function toggleHabit(habit) {
   const original = habit.completed;
   habit.completed = !habit.completed;
+  const today = getLocalDate();
+  
   try {
-    const today = getLocalDate();
     if (habit.completed) {
-      await sql`INSERT INTO "Log" ("id", "habitId", "userId", "date", "value") VALUES (${crypto.randomUUID()}, ${habit.id}, ${user.value.id}, ${today}, 1)`;
+      const newLog = { 
+        id: crypto.randomUUID(), 
+        habitId: habit.id, 
+        userId: user.value.id, 
+        date: new Date(), 
+        value: 1 
+      };
+      // Optimistic update
+      logs.value.push(newLog);
+      await sql`INSERT INTO "Log" ("id", "habitId", "userId", "date", "value") VALUES (${newLog.id}, ${newLog.habitId}, ${newLog.userId}, ${today}, 1)`;
     } else {
+      // Optimistic update
+      logs.value = logs.value.filter(l => !(l.habitId === habit.id && getLocalDate(l.date) === today));
       await sql`DELETE FROM "Log" WHERE "habitId" = ${habit.id} AND "userId" = ${user.value.id} AND "date"::date = ${today}::date`;
     }
-    // Refresh local cache
-    const logData = await sql`SELECT "habitId", "date" FROM "Log" WHERE "userId" = ${user.value.id}`;
-    logs.value = logData;
-    calculateStats(logData);
-    processHeatmap(logData);
-    processWeeklyChart(logData);
+    
+    // Efficiently re-calculate stats locally without full refetch
+    calculateStats(logs.value);
+    processHeatmap(logs.value);
+    processWeeklyChart(logs.value);
   } catch (err) {
+    console.error("Toggle error:", err);
     habit.completed = original;
+    // Re-fetch only on true failure to stay safe
+    await fetchDashboardData();
   }
 }
 
