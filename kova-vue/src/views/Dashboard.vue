@@ -164,9 +164,7 @@
                  class="flex items-center justify-between group cursor-pointer p-4 rounded-xl border border-transparent hover:bg-white/[0.02] hover:border-white/5 transition-all active:scale-[0.98] animate-slide-in-right ghost-click border-glow"
                  :style="{ animationDelay: `${500 + (idx * 100)}ms` }">
               <div class="flex items-center gap-5">
-                <div class="habit-toggle-squish relative w-2.5 h-2.5">
-                  <div :class="['toggle-circle w-full h-full rounded-full transition-all duration-500 shadow-sm', habit.completed ? 'bg-primary shadow-primary/40' : 'bg-outline-variant']"></div>
-                </div>
+                <div :class="['w-2.5 h-2.5 rounded-full transition-all duration-500 shadow-sm', habit.completed ? 'bg-primary shadow-primary/40' : 'bg-outline-variant']"></div>
                 <span :class="['text-[16px] font-medium transition-all duration-500', habit.completed ? 'text-white/30 line-through' : 'text-white group-hover:text-primary']">
                   {{ habit.name }}
                 </span>
@@ -832,13 +830,7 @@ onMounted(fetchDashboardData);
   transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-/* 12. Squish Toggle */
-.habit-toggle-squish:active .toggle-circle {
-  transform: scale(0.8, 1.2);
-}
-.toggle-circle {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.5s;
-}
+/* 12. Squish Toggle removed */
 
 /* 14. Ghost Click Ripple */
 .ghost-click { position: relative; overflow: hidden; }
