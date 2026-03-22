@@ -8,14 +8,17 @@
         </RouterLink>
         <div class="hidden md:flex items-center gap-2">
           <RouterLink to="/dashboard" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight">Dashboard</RouterLink>
-          <a class="text-primary bg-primary/10 rounded-full px-4 py-1.5 font-semibold text-sm tracking-tight" href="#">Habits</a>
+          <RouterLink to="/dashboard" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight">Habits</RouterLink>
           <a class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight" href="#">Analytics</a>
-          <a class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight" href="#">Profile</a>
+          <RouterLink to="/profile" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight">Profile</RouterLink>
         </div>
         <div class="flex items-center gap-4">
           <button class="material-symbols-outlined text-white/60 hover:text-white transition-colors">notifications</button>
-          <div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border border-white/10">
-            <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-BqCbyPKBkZPfEyODt1H84SiED0uvoAYYx793SHHkio5Xk6RNpiiEi0FjH7lTc-DcW4mRTC8fAxUnKeloAfoxcVhaZWl-2_gfBtCg-sLRQXCqOvrXCF5PiKhsTnNxzD6x0CmlLeHMWasROjkbqq8GozaKv8aIkUT9isxexX7rZpH8VtX76UpYNvPxoPWIsLBA53YEeGwmplkeMLAOfuGAG1bTbgFydCDMiP_wGqF3-EltNXddyDEo3HavHMOnIkKHrtktNC-Uu5sH" alt="Avatar"/>
+          <div @click="$router.push('/profile')" class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border border-white/10 cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all">
+            <img v-if="user?.image" class="w-full h-full object-cover" :src="user.image" alt="Avatar"/>
+            <div v-else class="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs uppercase">
+              {{ (user?.name || 'U').charAt(0) }}
+            </div>
           </div>
         </div>
       </div>

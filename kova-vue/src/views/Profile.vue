@@ -17,9 +17,9 @@
           <button class="text-white/60 hover:text-white transition-all">
             <span class="material-symbols-outlined">notifications</span>
           </button>
-          <div class="w-8 h-8 rounded-full bg-surface-container-high border border-white/10 overflow-hidden">
+          <div @click="$router.push('/profile')" class="w-8 h-8 rounded-full bg-surface-container-high border border-white/10 overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all">
             <img v-if="user?.image" class="w-full h-full object-cover" :src="user.image" :alt="user.name">
-            <div v-else class="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
+            <div v-else class="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs uppercase">
                {{ (user?.name || 'U').charAt(0) }}
             </div>
           </div>
