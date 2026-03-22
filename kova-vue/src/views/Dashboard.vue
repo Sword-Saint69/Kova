@@ -1,7 +1,5 @@
 <template>
-  <div :class="['min-h-screen bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary bg-grain transition-all duration-700', successFlash ? 'shadow-[inset_0_0_100px_rgba(177,255,41,0.1)]' : '']">
-    <!-- Log Success Flash Overlay -->
-    <div v-if="successFlash" class="fixed inset-0 pointer-events-none z-[60] bg-primary/5 animate-flash-overlay"></div>
+  <div class="min-h-screen bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary bg-grain transition-all duration-700">
     
     <!-- Loading Overlay -->
     <div v-if="loading" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a] gap-6 overflow-hidden">
@@ -381,10 +379,8 @@ const habits = ref([]);
 const loading = ref(true);
 const showRetry = ref(false);
 const logs = ref([]);
-const efficiency = ref(0);
 const displayedEfficiency = ref(0);
 const bloomEffect = ref(false);
-const successFlash = ref(false);
 const isSyncing = ref(false);
 const selectedFilterId = ref(null);
 const isShareModalOpen = ref(false);
@@ -701,10 +697,6 @@ function processWeeklyChart(allLogs) {
 }
 
 async function toggleHabit(habit) {
-  // 23. Log Success Flash
-  successFlash.value = true;
-  setTimeout(() => successFlash.value = false, 800);
-
   const original = habit.completed;
   habit.completed = !habit.completed;
   const today = getLocalDate();
@@ -925,15 +917,7 @@ onMounted(fetchDashboardData);
   opacity: 0; transform: translateY(-20px);
 }
 
-/* 23. Log Success Flash */
-@keyframes flashOverlay {
-  0% { opacity: 0; }
-  20% { opacity: 1; }
-  100% { opacity: 0; }
-}
-.animate-flash-overlay {
-  animation: flashOverlay 0.8s ease-out forwards;
-}
+/* 23. Log Success Flash removed */
 
 /* 26. Streak Fire Glow */
 @keyframes fireGlow {
