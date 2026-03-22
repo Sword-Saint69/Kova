@@ -4,7 +4,7 @@
     <nav class="bg-[#0e0e0e]/90 backdrop-blur-xl border-b border-white/5 docked full-width top-0 sticky z-50">
       <div class="flex justify-between items-center w-full px-6 py-4 max-w-[1440px] mx-auto">
         <div @click="$router.push('/dashboard')" class="flex items-center gap-2 cursor-pointer group">
-          <img src="/logo-full.png" alt="KoVA Logo" class="w-8 h-8 object-contain transition-transform group-hover:scale-110">
+          <img src="/logo-full.png" alt="KoVA Logo" class="h-12 w-auto object-contain transition-transform group-hover:scale-110">
         </div>
         <div class="hidden md:flex gap-2">
           <RouterLink to="/dashboard" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors font-sans text-sm font-medium tracking-tight">Dashboard</RouterLink>
@@ -154,7 +154,7 @@
     <!-- Global Footer -->
     <footer class="bg-[#0e0e0e] border-t border-white/5">
       <div class="flex flex-col gap-8 w-full px-8 py-12 max-w-7xl mx-auto items-center md:items-start">
-        <img src="/logo-full.png" class="h-8 w-auto grayscale opacity-50 contrast-125" alt="KoVA Logo">
+        <img src="/logo-full.png" class="h-16 w-auto grayscale opacity-50 contrast-125" alt="KoVA Logo">
         <div class="flex flex-wrap justify-center md:justify-start gap-8">
           <a class="text-white/40 hover:text-[#b1ff29] transition-colors duration-300 font-sans text-[12px] uppercase tracking-widest" href="#">Privacy</a>
           <a class="text-white/40 hover:text-[#b1ff29] transition-colors duration-300 font-sans text-[12px] uppercase tracking-widest" href="#">Terms</a>

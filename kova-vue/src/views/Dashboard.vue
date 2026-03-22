@@ -13,7 +13,7 @@
     <nav v-if="!loading" class="bg-[#0e0e0e]/90 border-b border-white/5 fixed top-0 left-0 right-0 z-50">
       <div class="flex justify-between items-center w-full px-6 py-4 max-w-[1440px] mx-auto">
         <div class="flex items-center gap-2">
-          <img src="/logo-full.png" alt="KoVA Logo" class="w-8 h-8 object-contain cursor-pointer" @click="$router.push('/dashboard')">
+          <img src="/logo-full.png" alt="KoVA Logo" class="h-12 w-auto object-contain cursor-pointer" @click="$router.push('/dashboard')">
         </div>
         <div class="hidden md:flex items-center space-x-2">
           <RouterLink to="/dashboard" class="text-secondary bg-secondary/10 rounded-full px-4 py-1.5 font-semibold text-sm">Dashboard</RouterLink>
@@ -259,7 +259,7 @@
     <footer v-if="!loading" class="bg-background border-t border-white/5 mt-12 py-16 px-8">
       <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
         <div class="flex flex-col items-center gap-4">
-          <img src="/logo-full.png" alt="KoVA Logo" class="w-12 h-12 opacity-20 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer" @click="$router.push('/dashboard')">
+          <img src="/logo-full.png" alt="KoVA Logo" class="h-20 w-auto opacity-20 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer" @click="$router.push('/dashboard')">
         </div>
         <div class="flex gap-12 text-white/30 text-[11px] font-black uppercase tracking-[0.4em]">
           <a href="#" class="hover:text-primary transition-all">Privacy</a>

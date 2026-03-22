@@ -4,7 +4,7 @@
     <nav class="bg-[#0e0e0e]/90 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50 transition-all">
       <div class="flex justify-between items-center w-full px-6 py-4 max-w-[1440px] mx-auto">
         <RouterLink to="/dashboard" class="flex items-center gap-2 cursor-pointer group">
-          <img src="/logo-full.png" alt="KoVA Logo" class="w-8 h-8 object-contain transition-transform group-hover:scale-110">
+          <img src="/logo-full.png" alt="KoVA Logo" class="h-12 w-auto object-contain transition-transform group-hover:scale-110">
         </RouterLink>
         <div class="hidden md:flex items-center gap-2">
           <RouterLink to="/dashboard" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight">Dashboard</RouterLink>
