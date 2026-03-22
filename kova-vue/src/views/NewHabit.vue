@@ -8,7 +8,6 @@
         </RouterLink>
         <div class="hidden md:flex items-center gap-2">
           <RouterLink to="/dashboard" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight">Dashboard</RouterLink>
-          <RouterLink to="/dashboard" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight">Habits</RouterLink>
           <a class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight" href="#">Analytics</a>
           <RouterLink to="/profile" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium tracking-tight">Profile</RouterLink>
         </div>

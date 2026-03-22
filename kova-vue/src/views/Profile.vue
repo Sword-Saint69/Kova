@@ -9,7 +9,6 @@
         </div>
         <div class="hidden md:flex gap-2">
           <RouterLink to="/dashboard" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors font-sans text-sm font-medium tracking-tight">Dashboard</RouterLink>
-          <RouterLink to="/dashboard" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors font-sans text-sm font-medium tracking-tight">Habits</RouterLink>
           <a class="text-white/60 hover:text-white px-4 py-1.5 transition-colors font-sans text-sm font-medium tracking-tight" href="#">Analytics</a>
           <RouterLink to="/profile" class="text-[#b1ff29] bg-[#b1ff29]/10 rounded-full px-4 py-1.5 font-semibold font-sans text-sm tracking-tight">Profile</RouterLink>
         </div>
