@@ -18,16 +18,19 @@
         </div>
         <div class="hidden md:flex items-center space-x-2">
           <RouterLink to="/dashboard" class="text-secondary bg-secondary/10 rounded-full px-4 py-1.5 font-semibold text-sm">Dashboard</RouterLink>
-          <a class="text-white/40 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium" href="#">Habits</a>
+          <RouterLink to="/dashboard" class="text-white/40 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium">Habits</RouterLink>
           <a class="text-white/40 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium" href="#">Analytics</a>
-          <a class="text-white/40 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium" href="#">Profile</a>
+          <RouterLink to="/profile" class="text-white/40 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium">Profile</RouterLink>
         </div>
         <div class="flex items-center gap-4">
           <button class="text-white/40 hover:text-white transition-all">
             <span class="material-symbols-outlined font-light">notifications</span>
           </button>
-          <button @click="handleLogout" class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-white/10">
-            <img alt="User avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkRxlkmUTv20JL20YN3LEhXSBjtqqY5JWJU0Ddyh9VvFc1vyPhZaz8ugvaK7wsHTPgxcAy5ILyOMBP8qwMmjv1JMYQ37KCnW-k0UZvRUqXObTWMuBxngteily1ExpzHXPL9gh1xXtsm58ZoX48_8G74quctkJ8u3Rz-7OGvUy1Y8FXCyWtxS34UWtzkwnTexcATv9CfIyeifr9FoFrsmbOTu_YlDVmcEu388LJGANGYMUgd5PVYFli3iR5Vkr5b4t53ZKqh1MhlyaV"/>
+          <button @click="$router.push('/profile')" class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-white/10 group active:scale-95 transition-all">
+            <img v-if="user?.image" alt="User avatar" class="w-full h-full object-cover" :src="user.image"/>
+            <div v-else class="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs uppercase">
+              {{ (user?.name || 'U').charAt(0) }}
+            </div>
           </button>
         </div>
       </div>

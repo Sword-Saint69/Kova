@@ -9,18 +9,18 @@
         </div>
         <div class="hidden md:flex items-center gap-2">
           <RouterLink to="/dashboard" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors font-sans text-sm font-medium tracking-tight">Dashboard</RouterLink>
-          <a class="text-[#b1ff29] bg-[#b1ff29]/10 rounded-full px-4 py-1.5 font-semibold font-sans text-sm tracking-tight" href="#">Habits</a>
+          <RouterLink to="/dashboard" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors font-sans text-sm font-medium tracking-tight">Habits</RouterLink>
           <a class="text-white/60 hover:text-white px-4 py-1.5 transition-colors font-sans text-sm font-medium tracking-tight" href="#">Analytics</a>
-          <a class="text-white/60 hover:text-white px-4 py-1.5 transition-colors font-sans text-sm font-medium tracking-tight" href="#">Profile</a>
+          <RouterLink to="/profile" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors font-sans text-sm font-medium tracking-tight">Profile</RouterLink>
         </div>
         <div class="flex items-center gap-4">
           <button class="text-white/60 hover:text-white transition-colors">
             <span class="material-symbols-outlined">notifications</span>
           </button>
-          <div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+          <div @click="$router.push('/profile')" class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all border border-white/5">
             <img v-if="userAvatar" :src="userAvatar" alt="User avatar" class="w-full h-full object-cover">
-            <div v-else class="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
-              {{ habit?.userId?.charAt(0).toUpperCase() }}
+            <div v-else class="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs uppercase">
+              {{ (habit?.name || 'U').charAt(0) }}
             </div>
           </div>
         </div>
