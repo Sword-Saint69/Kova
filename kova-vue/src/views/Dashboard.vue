@@ -1,5 +1,7 @@
-<template>
-  <div class="min-h-screen bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary bg-grain">
+  <div :class="['min-h-screen bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary bg-grain transition-all duration-700', successFlash ? 'shadow-[inset_0_0_100px_rgba(177,255,41,0.1)]' : '']">
+    <!-- Log Success Flash Overlay -->
+    <div v-if="successFlash" class="fixed inset-0 pointer-events-none z-[60] bg-primary/5 animate-flash-overlay"></div>
+    
     <!-- Loading Overlay -->
     <div v-if="loading" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a] gap-6 overflow-hidden">
       <!-- 7. Skeleton Shimmer Background -->
@@ -84,14 +86,13 @@
             </div>
             <div class="bg-surface-container-highest px-3 py-1.5 rounded-full flex items-center gap-2 border border-white/5">
               <span class="material-symbols-outlined text-primary text-[18px]">local_fire_department</span>
-              <span class="text-[10px] font-bold text-white uppercase tracking-tighter">Top Streak: {{ topStreak }} Days</span>
             </div>
           </div>
           
-          <div class="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto no-scrollbar py-4 z-10">
+          <div class="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto no-scrollbar py-4 z-10 group/heatmap">
             <div 
               v-for="(cell, i) in heatmapCells" :key="cell.date"
-              class="w-2.5 h-2.5 rounded-[2px] transition-all duration-500 hover:scale-125 hover:z-20 border border-white/5 animate-fade-in"
+              class="w-2.5 h-2.5 rounded-[2px] transition-all duration-500 hover:scale-[1.8] hover:z-20 border border-white/5 animate-fade-in group-hover/heatmap:opacity-30 hover:!opacity-100"
               :class="getIntensityClass(cell.count)"
               :style="{ animationDelay: `${100 + (i * 2)}ms` }"
               :title="`${cell.date}: ${cell.count} habits`"
@@ -117,10 +118,11 @@
 
         <!-- Streak Hero -->
         <section v-tilt class="md:col-span-4 md:row-span-2 bg-primary rounded-xl p-8 flex flex-col justify-center items-center text-on-primary text-center relative overflow-hidden shadow-2xl shadow-primary/20 transition-all hover:scale-[1.01] bento-item glass-sweep" style="animation-delay: 200ms;">
+          <div :class="['absolute inset-0 opacity-20 pointer-events-none', currentStreak > 10 ? 'animate-fire-glow' : '']"></div>
           <div class="absolute top-0 right-0 p-4 opacity-10">
             <span class="material-symbols-outlined text-[120px]">auto_awesome</span>
           </div>
-          <div class="serif-number text-[10rem] leading-none drop-shadow-lg tracking-tighter">{{ displayedStreak }}</div>
+          <div class="serif-number text-[10rem] leading-none drop-shadow-lg tracking-tighter relative z-10">{{ displayedStreak }}</div>
           <div class="text-[11px] font-bold uppercase tracking-[0.3em] mt-2 opacity-80">Days In A Row</div>
           <div class="mt-8 text-[9px] bg-on-primary/10 px-6 py-2 rounded-full uppercase font-bold tracking-[0.3em] backdrop-blur-sm border border-on-primary/10">Personal Record</div>
         </section>
@@ -471,6 +473,29 @@ function getLocalDate(date = new Date()) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+function animateEfficiency() {
+  const duration = 2000;
+  const start = 0;
+  const end = efficiency.value;
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 4); // easeOutQuart
+    displayedEfficiency.value = parseFloat((ease * end).toFixed(1));
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    }
+  }
+  requestAnimationFrame(update);
+  
+  // Bloom effect
+  bloomEffect.value = true;
+  setTimeout(() => bloomEffect.value = false, 1000);
+}
+
 function animateStreak() {
   const duration = 1500;
   const start = 0;
@@ -577,6 +602,7 @@ function calculateStats(allLogs) {
 
   topStreak.value = maxStreak;
   animateStreak();
+  animateEfficiency();
 }
 
 // Custom Directives for Premium Feel
@@ -863,4 +889,53 @@ onMounted(fetchDashboardData);
   box-shadow: 0 0 15px rgba(177, 255, 41, 0.4);
   transform: scale(1.05);
 }
+/* 21. Bar Chart Spring */
+.cubic-spring {
+  transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 24. Quote Fade-and-Swap */
+.quote-slide-enter-active, .quote-slide-leave-active {
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.6s;
+}
+.quote-slide-enter-from {
+  opacity: 0; transform: translateY(20px);
+}
+.quote-slide-leave-to {
+  opacity: 0; transform: translateY(-20px);
+}
+
+/* 23. Log Success Flash */
+@keyframes flashOverlay {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.animate-flash-overlay {
+  animation: flashOverlay 0.8s ease-out forwards;
+}
+
+/* 26. Streak Fire Glow */
+@keyframes fireGlow {
+  0%, 100% { opacity: 0.1; background: radial-gradient(circle, #b1ff29 0%, transparent 70%); }
+  50% { opacity: 0.3; background: radial-gradient(circle, #b1ff29 20%, transparent 80%); }
+}
+.animate-fire-glow {
+  animation: fireGlow 2s infinite alternate ease-in-out;
+}
+
+/* 28. Calendar Date Pulse */
+@keyframes datePulse {
+  0% { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+.animate-date-pulse {
+  animation: datePulse 2s infinite ease-out;
+}
+
+/* 29. Sync Spin */
+.animate-sync-spin {
+  animation: spin 1s linear infinite;
+}
+
 </style>
