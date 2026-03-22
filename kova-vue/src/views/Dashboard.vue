@@ -25,10 +25,10 @@
           <RouterLink to="/profile" class="text-white/40 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium">Profile</RouterLink>
         </div>
         <div class="flex items-center gap-4">
-          <button class="text-white/40 hover:text-white transition-all">
+          <button class="text-white/40 hover:text-white transition-all icon-morph">
             <span class="material-symbols-outlined font-light">notifications</span>
           </button>
-          <button @click="$router.push('/profile')" class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-white/10 group active:scale-95 transition-all">
+          <button @click="$router.push('/profile')" class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-white/10 group active:scale-95 transition-all avatar-halo">
             <img v-if="user?.image" alt="User avatar" class="w-full h-full object-cover" :src="user.image"/>
             <div v-else class="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs uppercase">
               {{ (user?.name || 'U').charAt(0) }}
@@ -57,7 +57,7 @@
           </div>
         </div>
         <div class="flex gap-3 animate-fade-in" style="animation-delay: 1000ms;">
-          <RouterLink to="/habits/new" class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 shadow-lg shadow-primary/10 hover:scale-105">
+          <RouterLink v-magnetic to="/habits/new" class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 shadow-lg shadow-primary/10 hover:scale-105 ghost-click">
             <span class="material-symbols-outlined text-[20px]">add</span>
             Add habit
           </RouterLink>
@@ -67,7 +67,7 @@
       <!-- Bento Grid -->
       <div class="grid grid-cols-1 md:grid-cols-12 gap-[10px]">
         <!-- Consistency Overview -->
-        <section class="md:col-span-8 md:row-span-2 bg-surface-container-low rounded-xl p-8 flex flex-col justify-between relative overflow-hidden group bento-item glass-sweep" style="animation-delay: 100ms;">
+        <section v-tilt class="md:col-span-8 md:row-span-2 bg-surface-container-low rounded-xl p-8 flex flex-col justify-between relative overflow-hidden group bento-item glass-sweep border-glow" style="animation-delay: 100ms;">
           <div class="flex justify-between items-start mb-6 z-10">
             <div>
               <h3 class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 opacity-60">Consistency Overview</h3>
@@ -115,7 +115,7 @@
         </section>
 
         <!-- Streak Hero -->
-        <section class="md:col-span-4 md:row-span-2 bg-primary rounded-xl p-8 flex flex-col justify-center items-center text-on-primary text-center relative overflow-hidden shadow-2xl shadow-primary/20 transition-all hover:scale-[1.01] bento-item glass-sweep" style="animation-delay: 200ms;">
+        <section v-tilt class="md:col-span-4 md:row-span-2 bg-primary rounded-xl p-8 flex flex-col justify-center items-center text-on-primary text-center relative overflow-hidden shadow-2xl shadow-primary/20 transition-all hover:scale-[1.01] bento-item glass-sweep" style="animation-delay: 200ms;">
           <div class="absolute top-0 right-0 p-4 opacity-10">
             <span class="material-symbols-outlined text-[120px]">auto_awesome</span>
           </div>
@@ -160,10 +160,12 @@
           <div class="space-y-4 flex-1 overflow-y-auto no-scrollbar pr-2">
             <div v-for="(habit, idx) in habits" :key="habit.id" 
                  @click="$router.push(`/habits/${habit.id}`)"
-                 class="flex items-center justify-between group cursor-pointer p-4 rounded-xl border border-transparent hover:bg-white/[0.02] hover:border-white/5 transition-all active:scale-[0.98] animate-slide-in-right"
+                 class="flex items-center justify-between group cursor-pointer p-4 rounded-xl border border-transparent hover:bg-white/[0.02] hover:border-white/5 transition-all active:scale-[0.98] animate-slide-in-right ghost-click border-glow"
                  :style="{ animationDelay: `${500 + (idx * 100)}ms` }">
               <div class="flex items-center gap-5">
-                <div :class="['w-2.5 h-2.5 rounded-full transition-all duration-500 shadow-sm', habit.completed ? 'bg-primary shadow-primary/40' : 'bg-outline-variant']"></div>
+                <div class="habit-toggle-squish relative w-2.5 h-2.5">
+                  <div :class="['toggle-circle w-full h-full rounded-full transition-all duration-500 shadow-sm', habit.completed ? 'bg-primary shadow-primary/40' : 'bg-outline-variant']"></div>
+                </div>
                 <span :class="['text-[16px] font-medium transition-all duration-500', habit.completed ? 'text-white/30 line-through' : 'text-white group-hover:text-primary']">
                   {{ habit.name }}
                 </span>
@@ -577,6 +579,38 @@ function calculateStats(allLogs) {
   animateStreak();
 }
 
+// Custom Directives for Premium Feel
+const vMagnetic = {
+  mounted(el) {
+    el.addEventListener('mousemove', (e) => {
+      const { left, top, width, height } = el.getBoundingClientRect();
+      const x = (e.clientX - (left + width / 2)) * 0.35;
+      const y = (e.clientY - (top + height / 2)) * 0.35;
+      el.style.transform = `translate(${x}px, ${y}px)`;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = 'translate(0, 0)';
+    });
+    el.style.transition = 'transform 0.1s cubic-bezier(0.2, 0.8, 0.2, 1)';
+  }
+};
+
+const vTilt = {
+  mounted(el) {
+    el.addEventListener('mousemove', (e) => {
+      const { left, top, width, height } = el.getBoundingClientRect();
+      const x = (e.clientX - left) / width - 0.5;
+      const y = (e.clientY - top) / height - 0.5;
+      el.style.transform = `perspective(1000px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) scale(1.02)`;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = 'perspective(1000px) rotateY(0) rotateX(0) scale(1)';
+    });
+    el.style.transition = 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+    el.style.zIndex = '10';
+  }
+};
+
 function processHeatmap(allLogs) {
   const cells = [];
   const now = new Date();
@@ -694,6 +728,17 @@ onMounted(fetchDashboardData);
 </script>
 
 <style>
+/* 19. Elastic Routing Entrance */
+.page-enter-active, .page-leave-active {
+  transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.page-enter-from {
+  opacity: 0; transform: scale(0.98) translateY(10px);
+}
+.page-leave-to {
+  opacity: 0; transform: scale(1.02) translateY(-10px);
+}
+
 /* 1. Staggered Bento Entrance */
 @keyframes bentoReveal {
   from { opacity: 0; transform: translateY(30px) scale(0.98); }
@@ -783,5 +828,45 @@ onMounted(fetchDashboardData);
 
 .ease-out-expo {
   transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* 12. Squish Toggle */
+.habit-toggle-squish:active .toggle-circle {
+  transform: scale(0.8, 1.2);
+}
+.toggle-circle {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.5s;
+}
+
+/* 14. Ghost Click Ripple */
+.ghost-click { position: relative; overflow: hidden; }
+.ghost-click::after {
+  content: ""; position: absolute; top: 50%; left: 50%; width: 5px; height: 5px; background: rgba(255,255,255,0.4);
+  opacity: 0; border-radius: 100%; transform: scale(1, 1) translate(-50%, -50%); transform-origin: 50% 50%;
+}
+.ghost-click:active::after {
+  animation: ripple 0.6s ease-out;
+}
+@keyframes ripple {
+  0% { transform: scale(0, 0) translate(-50%, -50%); opacity: 0.5; }
+  100% { transform: scale(40, 40) translate(-50%, -50%); opacity: 0; }
+}
+
+/* 16. Border Glow Trace */
+.border-glow {
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.border-glow:hover {
+  border-color: rgba(177, 255, 41, 0.3) !important;
+  box-shadow: 0 0 20px rgba(177, 255, 41, 0.05);
+}
+
+/* 17. Icon Morph & 18. Avatar Halo */
+.icon-morph:hover span {
+  transform: scale(1.1) rotate(5deg);
+}
+.avatar-halo:hover {
+  box-shadow: 0 0 15px rgba(177, 255, 41, 0.4);
+  transform: scale(1.05);
 }
 </style>
