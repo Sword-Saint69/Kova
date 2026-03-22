@@ -1,5 +1,7 @@
 <template>
   <div class="min-h-screen bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary bg-grain transition-all duration-700">
+    <!-- 33. Scroll Progress Bar -->
+    <div class="fixed top-0 left-0 h-[2px] bg-primary z-[100] transition-all duration-100" :style="{ width: `${scrollProgress}%` }"></div>
     
     <!-- Loading Overlay -->
     <div v-if="loading" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a] gap-6 overflow-hidden">
@@ -24,15 +26,27 @@
         <div class="flex items-center gap-2">
           <img src="/logo-full.png" alt="KoVA Logo" class="h-8 w-auto object-contain cursor-pointer animate-logo-pulse" @click="$router.push('/dashboard')">
         </div>
-        <div class="hidden md:flex items-center space-x-2">
-          <RouterLink to="/dashboard" class="text-secondary bg-secondary/10 rounded-full px-4 py-1.5 font-semibold text-sm relative group active:scale-95 transition-all">
+        <div class="hidden md:flex items-center space-x-2 group/nav">
+          <RouterLink to="/dashboard" class="text-secondary bg-secondary/10 rounded-full px-4 py-1.5 font-semibold text-sm relative group active:scale-95 transition-all group-hover/nav:opacity-30 hover:!opacity-100">
             Dashboard
             <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </RouterLink>
-          <a class="text-white/40 hover:text-white px-4 py-1.5 transition-all text-sm font-medium relative group underlined-link" href="#">Analytics</a>
-          <RouterLink to="/profile" class="text-white/40 hover:text-white px-4 py-1.5 transition-all text-sm font-medium relative group underlined-link">Profile</RouterLink>
+          <a class="text-white/40 hover:text-white px-4 py-1.5 transition-all text-sm font-medium relative group underlined-link group-hover/nav:opacity-30 hover:!opacity-100" href="#">Analytics</a>
+          <RouterLink to="/profile" class="text-white/40 hover:text-white px-4 py-1.5 transition-all text-sm font-medium relative group underlined-link group-hover/nav:opacity-30 hover:!opacity-100">Profile</RouterLink>
         </div>
         <div class="flex items-center gap-4">
+          <!-- 46. Search Expand -->
+          <div class="relative flex items-center">
+            <input 
+              v-model="searchQuery"
+              :class="['bg-white/5 border border-white/10 rounded-full text-xs text-white px-4 py-1.5 transition-all duration-500 ease-out-expo outline-none focus:border-primary/50', isSearchOpen ? 'w-48 opacity-100' : 'w-0 opacity-0 pointer-events-none']"
+              placeholder="Search protocol..."
+            />
+            <button @click="isSearchOpen = !isSearchOpen" class="text-white/40 hover:text-white transition-all icon-morph ml-2">
+              <span class="material-symbols-outlined font-light">{{ isSearchOpen ? 'close' : 'search' }}</span>
+            </button>
+          </div>
+
           <button class="text-white/40 hover:text-white transition-all icon-morph relative group">
             <span class="material-symbols-outlined font-light">notifications</span>
             <!-- 39. Notifications Badge Pop -->
@@ -241,8 +255,8 @@
           <!-- Weekly Chart (Row 4) -->
           <section class="bg-surface-container-low rounded-xl p-8 flex items-end justify-between gap-3 border border-white/5">
             <div v-for="(day, idx) in ['M','T','W','T','F','S','S']" :key="idx" class="flex-1 flex flex-col items-center gap-4 group h-full justify-end relative">
-              <!-- Tooltip on hover -->
-              <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-[9px] font-black px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
+              <!-- 36. Tooltip Slide -->
+              <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-[9px] font-black px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 group-hover:-translate-y-1 transition-all pointer-events-none z-20">
                 {{ weeklyActivity[idx] }}
               </div>
               <div :class="['w-full rounded-full transition-all duration-[800ms] cubic-spring relative min-h-[4px]', idx === currentDOW ? 'bg-primary shadow-[0_0_20px_rgba(177,255,41,0.2)]' : 'bg-primary/10 group-hover:bg-primary/30']"
@@ -400,8 +414,15 @@ const isSyncing = ref(false);
 const selectedFilterId = ref(null);
 const isShareModalOpen = ref(false);
 const scrollY = ref(0);
+const scrollProgress = ref(0);
+const isSearchOpen = ref(false);
+const searchQuery = ref('');
+
 const handleScroll = () => {
   scrollY.value = window.scrollY;
+  const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  scrollProgress.value = (winScroll / height) * 100;
 };
 
 // Quotes
