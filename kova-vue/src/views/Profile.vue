@@ -5,7 +5,6 @@
       <div class="flex justify-between items-center w-full px-6 py-4 max-w-[1440px] mx-auto">
         <div @click="$router.push('/dashboard')" class="flex items-center gap-2 cursor-pointer group">
           <img src="/logo-full.png" alt="KoVA Logo" class="w-8 h-8 object-contain transition-transform group-hover:scale-110">
-          <div class="text-2xl font-bold text-white tracking-tighter transition-all group-hover:text-primary">KoVA</div>
         </div>
         <div class="hidden md:flex gap-2">
           <RouterLink to="/dashboard" class="text-white/60 hover:text-white px-4 py-1.5 transition-colors font-sans text-sm font-medium tracking-tight">Dashboard</RouterLink>
@@ -141,7 +140,7 @@
         <div class="flex flex-col items-center gap-4">
           <div class="w-8 h-px bg-primary/20"></div>
           <p class="font-sans text-[12px] uppercase tracking-widest text-on-surface-variant">
-            Tracked with <span class="font-serif italic text-white normal-case text-lg mx-1">KoVA</span> · kova.app
+            Tracked with perfection · kova.app
           </p>
           <div class="flex gap-6 mt-4">
             <a class="text-white/40 hover:text-primary transition-colors text-[10px] uppercase tracking-widest" href="#">Privacy</a>
