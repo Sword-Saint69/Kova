@@ -154,7 +154,7 @@
     <!-- Global Footer -->
     <footer class="bg-[#0e0e0e] border-t border-white/5">
       <div class="flex flex-col gap-8 w-full px-8 py-12 max-w-7xl mx-auto items-center md:items-start">
-        <img src="/logo-full.png" class="h-16 w-auto grayscale opacity-50 contrast-125" alt="KoVA Logo">
+        <img src="/logo-full.png" class="h-10 w-auto grayscale opacity-50 contrast-125" alt="KoVA Logo">
         <div class="flex flex-wrap justify-center md:justify-start gap-8">
           <a class="text-white/40 hover:text-[#b1ff29] transition-colors duration-300 font-sans text-[12px] uppercase tracking-widest" href="#">Privacy</a>
           <a class="text-white/40 hover:text-[#b1ff29] transition-colors duration-300 font-sans text-[12px] uppercase tracking-widest" href="#">Terms</a>

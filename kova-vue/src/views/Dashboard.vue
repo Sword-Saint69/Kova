@@ -259,7 +259,7 @@
     <footer v-if="!loading" class="bg-background border-t border-white/5 mt-12 py-16 px-8">
       <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
         <div class="flex flex-col items-center gap-4">
-          <img src="/logo-full.png" alt="KoVA Logo" class="h-20 w-auto opacity-20 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer" @click="$router.push('/dashboard')">
+          <img src="/logo-full.png" alt="KoVA Logo" class="h-10 w-auto opacity-20 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer" @click="$router.push('/dashboard')">
         </div>
         <div class="flex gap-12 text-white/30 text-[11px] font-black uppercase tracking-[0.4em]">
           <a href="#" class="hover:text-primary transition-all">Privacy</a>
