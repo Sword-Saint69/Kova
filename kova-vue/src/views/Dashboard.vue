@@ -46,10 +46,6 @@
           </div>
         </div>
         <div class="flex gap-3">
-          <button @click="seedData" v-if="totalDays < 5" class="flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white/40 px-6 py-3 rounded-xl font-bold text-sm hover:text-white hover:bg-white/10 transition-all">
-            <span class="material-symbols-outlined text-[20px]">magic_button</span>
-            Seed demo data
-          </button>
           <RouterLink to="/habits/new" class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 shadow-lg shadow-primary/10">
             <span class="material-symbols-outlined text-[20px]">add</span>
             Add habit
@@ -607,23 +603,6 @@ async function toggleHabit(habit) {
   }
 }
 
-async function seedData() {
-  loading.value = true;
-  try {
-    const now = new Date();
-    for (let i = 0; i < 150; i++) {
-      const d = new Date();
-      d.setDate(now.getDate() - Math.floor(Math.random() * 365));
-      const habit = habits.value[Math.floor(Math.random() * habits.value.length)];
-      await sql`INSERT INTO "Log" ("id", "habitId", "userId", "date", "value") VALUES (${crypto.randomUUID()}, ${habit.id}, ${user.value.id}, ${d.toISOString()}, 1)`;
-    }
-    await fetchDashboardData();
-  } catch (err) {
-    console.error(err);
-  } finally {
-    loading.value = false;
-  }
-}
 
 async function handleLogout() {
   await authClient.signOut();
