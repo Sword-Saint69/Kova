@@ -13,7 +13,7 @@
     <nav v-if="!loading" class="bg-[#0e0e0e]/90 border-b border-white/5 fixed top-0 left-0 right-0 z-50">
       <div class="flex justify-between items-center w-full px-6 py-4 max-w-[1440px] mx-auto">
         <div class="flex items-center gap-2">
-          <img src="/logo-full.png" alt="KoVA Logo" class="h-12 w-auto object-contain cursor-pointer" @click="$router.push('/dashboard')">
+          <img src="/logo-full.png" alt="KoVA Logo" class="h-8 w-auto object-contain cursor-pointer" @click="$router.push('/dashboard')">
         </div>
         <div class="hidden md:flex items-center space-x-2">
           <RouterLink to="/dashboard" class="text-secondary bg-secondary/10 rounded-full px-4 py-1.5 font-semibold text-sm">Dashboard</RouterLink>
