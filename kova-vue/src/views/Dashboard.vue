@@ -1,3 +1,4 @@
+<template>
   <div :class="['min-h-screen bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary bg-grain transition-all duration-700', successFlash ? 'shadow-[inset_0_0_100px_rgba(177,255,41,0.1)]' : '']">
     <!-- Log Success Flash Overlay -->
     <div v-if="successFlash" class="fixed inset-0 pointer-events-none z-[60] bg-primary/5 animate-flash-overlay"></div>
@@ -84,8 +85,9 @@
                 </button>
               </div>
             </div>
-            <div class="bg-surface-container-highest px-3 py-1.5 rounded-full flex items-center gap-2 border border-white/5">
+            <div class="bg-surface-container-highest px-3 py-1.5 rounded-full flex items-center gap-2 border border-white/5 relative z-10">
               <span class="material-symbols-outlined text-primary text-[18px]">local_fire_department</span>
+              <span class="text-[10px] font-bold text-white uppercase tracking-tighter">Top Streak: {{ topStreak }} Days</span>
             </div>
           </div>
           
@@ -146,6 +148,7 @@
                 day.isCurrent ? 'bg-primary text-on-primary font-bold shadow-lg shadow-primary/20 scale-110' : 'text-white/60 hover:text-white hover:bg-white/5',
                 day.isOtherMonth ? 'opacity-10' : ''
               ]">
+                <div v-if="day.isCurrent" class="absolute inset-0 rounded-full bg-primary/20 animate-date-pulse"></div>
                 {{ day.label }}
               </div>
               <!-- Activity Marker -->
@@ -205,7 +208,7 @@
 
           <!-- Completion Ring (Row 2-3) -->
           <section class="row-span-2 bg-surface-container-low rounded-xl p-8 flex flex-col items-center justify-center relative border border-white/5">
-            <div class="relative w-48 h-48 drop-shadow-[0_0_30px_rgba(177,255,41,0.05)]">
+            <div :class="['relative w-48 h-48 drop-shadow-[0_0_30px_rgba(177,255,41,0.05)] transition-transform duration-500', bloomEffect ? 'scale-110' : '']">
               <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                 <circle class="text-white/[0.03] stroke-current" cx="50" cy="50" fill="transparent" r="38" stroke-width="5"></circle>
                 <circle class="text-primary stroke-current transition-all duration-[2000ms] ease-out-expo" cx="50" cy="50" fill="transparent" r="38" 
@@ -213,8 +216,8 @@
                         stroke-linecap="round" stroke-width="7"></circle>
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="serif-number text-4xl leading-none text-white transition-all duration-500">{{ efficiency }}%</span>
-                <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/20 mt-3">Daily Goal</span>
+                <span class="text-4xl font-headline italic font-bold text-white transition-all duration-500" :class="bloomEffect ? 'text-primary scale-110' : ''">{{ displayedEfficiency }}%</span>
+                <span class="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Efficiency</span>
               </div>
             </div>
             <p class="mt-6 text-[11px] font-bold text-white/30 uppercase tracking-[0.4em]">
@@ -229,23 +232,27 @@
               <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-[9px] font-black px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
                 {{ weeklyActivity[idx] }}
               </div>
-              <div :class="['w-full rounded-full transition-all duration-1000 ease-out relative min-h-[4px]', idx === currentDOW ? 'bg-primary shadow-[0_0_20px_rgba(177,255,41,0.2)]' : 'bg-primary/10 group-hover:bg-primary/30']"
+              <div :class="['w-full rounded-full transition-all duration-[800ms] cubic-spring relative min-h-[4px]', idx === currentDOW ? 'bg-primary shadow-[0_0_20px_rgba(177,255,41,0.2)]' : 'bg-primary/10 group-hover:bg-primary/30']"
                    :style="{ height: Math.max(getBarHeight(idx), 5) + '%' }">
                 <div v-if="idx === currentDOW" class="absolute -top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white rounded-full"></div>
+                <div class="absolute inset-x-0 bottom-0 top-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </div>
               <span :class="['text-[9px] font-black tracking-widest uppercase', idx === currentDOW ? 'text-primary' : 'text-white/10 group-hover:text-white/30']">{{ day }}</span>
             </div>
           </section>
         </div>
 
-        <!-- Sticky Footer Row -->
-        <section class="md:col-span-4 bg-surface-container-low rounded-xl p-8 flex items-center border border-white/5 shadow-inner">
-          <p class="font-headline text-xl text-white/50 leading-relaxed italic pr-6 border-r border-white/5">
-            {{ currentQuote }}
-          </p>
-          <div class="pl-6 flex-shrink-0">
-             <span class="material-symbols-outlined text-white/10 text-[40px]">format_quote</span>
-          </div>
+        <section class="md:col-span-4 bg-surface-container-low rounded-xl p-8 flex items-center border border-white/5 shadow-inner bento-item" style="animation-delay: 800ms;">
+          <transition name="quote-slide" mode="out-in">
+            <div :key="currentQuote" class="flex items-center">
+              <p class="font-headline text-xl text-white/50 leading-relaxed italic pr-6 border-r border-white/5">
+                {{ currentQuote }}
+              </p>
+              <div class="pl-6 flex-shrink-0">
+                 <span class="material-symbols-outlined text-white/10 text-[40px]">format_quote</span>
+              </div>
+            </div>
+          </transition>
         </section>
 
         <section @click="isShareModalOpen = true" class="md:col-span-4 bg-secondary rounded-xl p-8 flex items-center justify-between group cursor-pointer hover:shadow-2xl hover:shadow-secondary/20 transition-all active:scale-[0.98]">
@@ -262,7 +269,7 @@
         <section @click="handleQuickLog" class="md:col-span-4 bg-surface-container-highest rounded-xl p-8 flex items-center justify-between group cursor-pointer border border-white/5 hover:bg-white/[0.04] transition-all active:scale-[0.98]">
           <div class="flex items-center gap-5">
             <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-all">
-              <span class="material-symbols-outlined text-primary group-hover:text-black text-3xl">bolt</span>
+              <span :class="['material-symbols-outlined text-primary group-hover:text-black text-3xl', isSyncing ? 'animate-sync-spin' : '']">bolt</span>
             </div>
             <span class="text-[13px] font-black text-white uppercase tracking-[0.3em]">Quick Habit Log</span>
           </div>
@@ -374,6 +381,11 @@ const habits = ref([]);
 const loading = ref(true);
 const showRetry = ref(false);
 const logs = ref([]);
+const efficiency = ref(0);
+const displayedEfficiency = ref(0);
+const bloomEffect = ref(false);
+const successFlash = ref(false);
+const isSyncing = ref(false);
 const selectedFilterId = ref(null);
 const isShareModalOpen = ref(false);
 
