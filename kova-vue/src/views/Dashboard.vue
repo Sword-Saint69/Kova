@@ -13,7 +13,7 @@
     <nav v-if="!loading" class="bg-[#0e0e0e]/90 border-b border-white/5 fixed top-0 left-0 right-0 z-50">
       <div class="flex justify-between items-center w-full px-6 py-4 max-w-[1440px] mx-auto">
         <div class="flex items-center gap-2">
-          <img src="/logo-full.png" alt="KoVA Logo" class="h-8 w-auto object-contain cursor-pointer" @click="$router.push('/dashboard')">
+          <img src="/logo-full.png" alt="KoVA Logo" class="h-8 w-auto object-contain cursor-pointer animate-logo-pulse" @click="$router.push('/dashboard')">
         </div>
         <div class="hidden md:flex items-center space-x-2">
           <RouterLink to="/dashboard" class="text-secondary bg-secondary/10 rounded-full px-4 py-1.5 font-semibold text-sm">Dashboard</RouterLink>
@@ -38,15 +38,22 @@
       <!-- Header -->
       <header class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
         <div>
-          <h1 class="text-6xl font-headline italic font-medium leading-tight text-white capitalize">Good morning, {{ user.name }}.</h1>
-          <div class="mt-2 flex items-center gap-3">
+          <h1 class="text-6xl font-headline italic font-medium leading-tight text-white capitalize">
+            <span v-for="(char, i) in `Good morning, ${user.name}.`.split('')" 
+                  :key="i" 
+                  class="typewriter-char"
+                  :style="{ animationDelay: `${i * 30}ms` }">
+              {{ char === ' ' ? '\u00A0' : char }}
+            </span>
+          </h1>
+          <div class="mt-2 flex items-center gap-3 animate-fade-in" style="animation-delay: 800ms;">
             <span class="text-on-surface-variant text-sm tracking-widest uppercase">{{ currentDate }}</span>
             <span class="w-1.5 h-1.5 rounded-full bg-primary/60"></span>
             <span class="text-primary text-sm font-semibold tracking-wide">{{ habits.filter(h => h.completed).length }} habits tracked today</span>
           </div>
         </div>
-        <div class="flex gap-3">
-          <RouterLink to="/habits/new" class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 shadow-lg shadow-primary/10">
+        <div class="flex gap-3 animate-fade-in" style="animation-delay: 1000ms;">
+          <RouterLink to="/habits/new" class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 shadow-lg shadow-primary/10 hover:scale-105">
             <span class="material-symbols-outlined text-[20px]">add</span>
             Add habit
           </RouterLink>
@@ -56,7 +63,7 @@
       <!-- Bento Grid -->
       <div class="grid grid-cols-1 md:grid-cols-12 gap-[10px]">
         <!-- Consistency Overview -->
-        <section class="md:col-span-8 md:row-span-2 bg-surface-container-low rounded-xl p-8 flex flex-col justify-between relative overflow-hidden group">
+        <section class="md:col-span-8 md:row-span-2 bg-surface-container-low rounded-xl p-8 flex flex-col justify-between relative overflow-hidden group bento-item glass-sweep" style="animation-delay: 100ms;">
           <div class="flex justify-between items-start mb-6 z-10">
             <div>
               <h3 class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 opacity-60">Consistency Overview</h3>
@@ -103,17 +110,17 @@
         </section>
 
         <!-- Streak Hero -->
-        <section class="md:col-span-4 md:row-span-2 bg-primary rounded-xl p-8 flex flex-col justify-center items-center text-on-primary text-center relative overflow-hidden shadow-2xl shadow-primary/20 transition-all hover:scale-[1.01]">
+        <section class="md:col-span-4 md:row-span-2 bg-primary rounded-xl p-8 flex flex-col justify-center items-center text-on-primary text-center relative overflow-hidden shadow-2xl shadow-primary/20 transition-all hover:scale-[1.01] bento-item glass-sweep" style="animation-delay: 200ms;">
           <div class="absolute top-0 right-0 p-4 opacity-10">
             <span class="material-symbols-outlined text-[120px]">auto_awesome</span>
           </div>
-          <div class="serif-number text-[10rem] leading-none drop-shadow-lg tracking-tighter">{{ currentStreak }}</div>
+          <div class="serif-number text-[10rem] leading-none drop-shadow-lg tracking-tighter">{{ displayedStreak }}</div>
           <div class="text-[11px] font-bold uppercase tracking-[0.3em] mt-2 opacity-80">Days In A Row</div>
           <div class="mt-8 text-[9px] bg-on-primary/10 px-6 py-2 rounded-full uppercase font-bold tracking-[0.3em] backdrop-blur-sm border border-on-primary/10">Personal Record</div>
         </section>
 
         <!-- Calendar -->
-        <section class="md:col-span-4 md:row-span-4 bg-surface-container-low rounded-xl p-8 border border-white/5">
+        <section class="md:col-span-4 md:row-span-4 bg-surface-container-low rounded-xl p-8 border border-white/5 bento-item" style="animation-delay: 300ms;">
           <div class="flex justify-between items-center mb-10">
             <h3 class="font-headline font-bold text-3xl text-white">{{ currentMonthName }}</h3>
             <div class="flex gap-3 opacity-20">
@@ -140,15 +147,16 @@
         </section>
 
         <!-- Today's Protocol -->
-        <section class="md:col-span-4 md:row-span-4 bg-surface-container-low rounded-xl p-8 border border-white/5 flex flex-col">
+        <section class="md:col-span-4 md:row-span-4 bg-surface-container-low rounded-xl p-8 border border-white/5 flex flex-col bento-item" style="animation-delay: 400ms;">
           <div class="flex justify-between items-center mb-10">
             <h3 class="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em]">Today's Protocol</h3>
             <span class="text-[10px] font-bold text-primary tracking-widest">{{ activeHabitsCount }} / {{ habits.length }}</span>
           </div>
           <div class="space-y-4 flex-1 overflow-y-auto no-scrollbar pr-2">
-            <div v-for="habit in habits" :key="habit.id" 
+            <div v-for="(habit, idx) in habits" :key="habit.id" 
                  @click="$router.push(`/habits/${habit.id}`)"
-                 class="flex items-center justify-between group cursor-pointer p-4 rounded-xl border border-transparent hover:bg-white/[0.02] hover:border-white/5 transition-all active:scale-[0.98]">
+                 class="flex items-center justify-between group cursor-pointer p-4 rounded-xl border border-transparent hover:bg-white/[0.02] hover:border-white/5 transition-all active:scale-[0.98] animate-slide-in-right"
+                 :style="{ animationDelay: `${500 + (idx * 100)}ms` }">
               <div class="flex items-center gap-5">
                 <div :class="['w-2.5 h-2.5 rounded-full transition-all duration-500 shadow-sm', habit.completed ? 'bg-primary shadow-primary/40' : 'bg-outline-variant']"></div>
                 <span :class="['text-[16px] font-medium transition-all duration-500', habit.completed ? 'text-white/30 line-through' : 'text-white group-hover:text-primary']">
@@ -174,7 +182,7 @@
         </section>
 
         <!-- Stats Grid Column -->
-        <div class="md:col-span-4 md:row-span-4 grid grid-rows-4 gap-[10px]">
+        <div class="md:col-span-4 md:row-span-4 grid grid-rows-4 gap-[10px] bento-item" style="animation-delay: 500ms;">
           <!-- Top Stats (Row 1) -->
           <div class="grid grid-cols-2 gap-[10px]">
             <section class="bg-surface-container-low rounded-xl p-8 flex flex-col justify-center border border-white/5">
@@ -376,6 +384,7 @@ const currentQuote = ref(quotes[Math.floor(Math.random() * quotes.length)]);
 // Stats
 const totalDays = ref(0);
 const currentStreak = ref(0);
+const displayedStreak = ref(0);
 const topStreak = ref(0);
 
 // Heatmap Labels
@@ -453,6 +462,26 @@ const calendarDays = computed(() => {
 function getLocalDate(date = new Date()) {
   const d = date instanceof Date ? date : new Date(date);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function animateStreak() {
+  const duration = 1500;
+  const start = 0;
+  const end = currentStreak.value;
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out expo
+    const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+    displayedStreak.value = Math.floor(ease * end);
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    }
+  }
+  requestAnimationFrame(update);
 }
 
 async function fetchDashboardData() {
@@ -540,6 +569,7 @@ function calculateStats(allLogs) {
   });
 
   topStreak.value = maxStreak;
+  animateStreak();
 }
 
 function processHeatmap(allLogs) {
@@ -659,12 +689,66 @@ onMounted(fetchDashboardData);
 </script>
 
 <style>
+/* 1. Staggered Bento Entrance */
+@keyframes bentoReveal {
+  from { opacity: 0; transform: translateY(30px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.bento-item {
+  animation: bentoReveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* 2. Logo Pulse-In */
+@keyframes logoPulse {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-logo-pulse {
+  animation: logoPulse 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* 6. Glass Card Sweep */
+@keyframes sweep {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+.glass-sweep::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+  animation: sweep 2s ease-in-out forwards;
+  pointer-events: none;
+}
+
+/* 10. Background Noise Wake-up */
+@keyframes noiseWakeup {
+  from { opacity: 0; }
+  to { opacity: 0.02; }
+}
+
 .serif-number { font-family: "Newsreader", serif; font-style: italic; }
 .bg-grain::before {
-  content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; opacity: 0.02;
+  content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; 
+  opacity: 0.02;
   background-image: url(https://grainy-gradients.vercel.app/noise.svg);
+  animation: noiseWakeup 2s ease-out;
 }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .spinner { width: 40px; height: 40px; border: 3px solid rgba(177, 255, 41, 0.1); border-radius: 50%; border-top-color: #b1ff29; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* 3. Typewriter Effect */
+.typewriter-char {
+  display: inline-block;
+  animation: typewriterChar 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes typewriterChar {
+  from { opacity: 0; transform: translateX(-5px); filter: blur(2px); }
+  to { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
 </style>
