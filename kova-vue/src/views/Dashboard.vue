@@ -15,25 +15,38 @@
     </div>
 
     <!-- TopNavBar -->
-    <nav v-if="!loading" class="bg-[#0e0e0e]/90 border-b border-white/5 fixed top-0 left-0 right-0 z-50">
+    <nav v-if="!loading" 
+         :class="[
+           'fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out-expo border-b border-white/5',
+           scrollY > 20 ? 'py-3 bg-[#0e0e0e]/95 backdrop-blur-2xl' : 'py-5 bg-transparent backdrop-blur-md'
+         ]">
       <div class="flex justify-between items-center w-full px-6 py-4 max-w-[1440px] mx-auto">
         <div class="flex items-center gap-2">
           <img src="/logo-full.png" alt="KoVA Logo" class="h-8 w-auto object-contain cursor-pointer animate-logo-pulse" @click="$router.push('/dashboard')">
         </div>
         <div class="hidden md:flex items-center space-x-2">
-          <RouterLink to="/dashboard" class="text-secondary bg-secondary/10 rounded-full px-4 py-1.5 font-semibold text-sm">Dashboard</RouterLink>
-          <a class="text-white/40 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium" href="#">Analytics</a>
-          <RouterLink to="/profile" class="text-white/40 hover:text-white px-4 py-1.5 transition-colors text-sm font-medium">Profile</RouterLink>
+          <RouterLink to="/dashboard" class="text-secondary bg-secondary/10 rounded-full px-4 py-1.5 font-semibold text-sm relative group active:scale-95 transition-all">
+            Dashboard
+            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </RouterLink>
+          <a class="text-white/40 hover:text-white px-4 py-1.5 transition-all text-sm font-medium relative group underlined-link" href="#">Analytics</a>
+          <RouterLink to="/profile" class="text-white/40 hover:text-white px-4 py-1.5 transition-all text-sm font-medium relative group underlined-link">Profile</RouterLink>
         </div>
         <div class="flex items-center gap-4">
-          <button class="text-white/40 hover:text-white transition-all icon-morph">
+          <button class="text-white/40 hover:text-white transition-all icon-morph relative group">
             <span class="material-symbols-outlined font-light">notifications</span>
+            <!-- 39. Notifications Badge Pop -->
+            <div class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-black animate-badge-pop scale-0 group-hover:scale-100 transition-transform"></div>
           </button>
-          <button @click="$router.push('/profile')" class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-white/10 group active:scale-95 transition-all avatar-halo">
-            <img v-if="user?.image" alt="User avatar" class="w-full h-full object-cover" :src="user.image"/>
-            <div v-else class="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs uppercase">
-              {{ (user?.name || 'U').charAt(0) }}
+          <button @click="$router.push('/profile')" class="flex items-center gap-2 group">
+            <div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-white/10 group active:scale-95 transition-all avatar-halo relative">
+              <img v-if="user?.image" alt="User avatar" class="w-full h-full object-cover" :src="user.image"/>
+              <div v-else class="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs uppercase">
+                {{ (user?.name || 'U').charAt(0) }}
+              </div>
             </div>
+            <!-- 48. User Menu Arrow Rotation -->
+            <span class="material-symbols-outlined text-white/20 text-xs group-hover:rotate-180 transition-transform duration-500">expand_more</span>
           </button>
         </div>
       </div>
@@ -131,9 +144,9 @@
         <section class="md:col-span-4 md:row-span-4 bg-surface-container-low rounded-xl p-8 border border-white/5 bento-item" style="animation-delay: 300ms;">
           <div class="flex justify-between items-center mb-10">
             <h3 class="font-headline font-bold text-3xl text-white">{{ currentMonthName }}</h3>
-            <div class="flex gap-3 opacity-20">
-              <span class="material-symbols-outlined cursor-pointer hover:text-white transition-all">chevron_left</span>
-              <span class="material-symbols-outlined cursor-pointer hover:text-white transition-all">chevron_right</span>
+            <div class="flex gap-3 text-white/20">
+              <span class="material-symbols-outlined cursor-pointer hover:text-white transition-all chevron-wobble">chevron_left</span>
+              <span class="material-symbols-outlined cursor-pointer hover:text-white transition-all chevron-wobble">chevron_right</span>
             </div>
           </div>
           <div class="grid grid-cols-7 gap-2 text-center text-[10px] font-bold text-white/20 uppercase tracking-[0.3em] mb-8">
@@ -161,7 +174,7 @@
             <h3 class="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em]">Today's Protocol</h3>
             <span class="text-[10px] font-bold text-primary tracking-widest">{{ activeHabitsCount }} / {{ habits.length }}</span>
           </div>
-          <div class="space-y-4 flex-1 overflow-y-auto no-scrollbar pr-2">
+          <transition-group name="habit-poof" tag="div" class="space-y-4 flex-1 overflow-y-auto no-scrollbar pr-2">
             <div v-for="(habit, idx) in habits" :key="habit.id" 
                  @click="$router.push(`/habits/${habit.id}`)"
                  class="flex items-center justify-between group cursor-pointer p-4 rounded-xl border border-transparent hover:bg-white/[0.02] hover:border-white/5 transition-all active:scale-[0.98] animate-slide-in-right ghost-click border-glow"
@@ -177,14 +190,16 @@
                   <span class="material-symbols-outlined text-[18px]">delete</span>
                 </button>
                 <div @click.stop="toggleHabit(habit)" :class="[
-                  'w-7 h-7 rounded-lg border-2 transition-all duration-500 flex items-center justify-center',
+                  'w-7 h-7 rounded-lg border-2 transition-all duration-500 flex items-center justify-center overflow-hidden',
                   habit.completed ? 'border-primary bg-primary/10' : 'border-outline-variant group-hover:border-primary/40'
                 ]">
-                  <span v-if="habit.completed" class="material-symbols-outlined text-primary text-[20px] font-black">check</span>
+                  <svg v-if="habit.completed" class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12" class="animate-check-trace"></polyline>
+                  </svg>
                 </div>
               </div>
             </div>
-          </div>
+          </transition-group>
           <div class="mt-8 p-4 bg-primary/5 rounded-xl border border-primary/10 italic text-[13px] text-white/60 text-center font-headline">
             "Your future is hidden in your daily routine."
           </div>
@@ -384,6 +399,10 @@ const bloomEffect = ref(false);
 const isSyncing = ref(false);
 const selectedFilterId = ref(null);
 const isShareModalOpen = ref(false);
+const scrollY = ref(0);
+const handleScroll = () => {
+  scrollY.value = window.scrollY;
+};
 
 // Quotes
 const quotes = [
@@ -762,7 +781,10 @@ function addHabit() {
 }
 
 watch(selectedFilterId, () => processHeatmap(logs.value));
-onMounted(fetchDashboardData);
+onMounted(() => {
+  fetchDashboardData();
+  window.addEventListener('scroll', handleScroll, { passive: true });
+});
 </script>
 
 <style>
@@ -940,6 +962,74 @@ onMounted(fetchDashboardData);
 /* 29. Sync Spin */
 .animate-sync-spin {
   animation: spin 1s linear infinite;
+}
+
+/* 31. Link Underline Growth */
+.underlined-link::after {
+  content: ""; position: absolute; bottom: 0; left: 50%; width: 0; height: 1.5px;
+  background: currentColor; transform: translateX(-50%); transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.underlined-link:hover::after { width: calc(100% - 2rem); }
+
+/* 32. Checkbox Trace */
+@keyframes checkTrace {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+.animate-check-trace {
+  stroke-dasharray: 24;
+  animation: checkTrace 0.4s cubic-bezier(.45, 0, .55, 1) forwards;
+}
+
+/* 34. Deleted Item Poof */
+.habit-poof-leave-active {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute; width: calc(100% - 4rem);
+}
+.habit-poof-leave-to {
+  opacity: 0; transform: scale(1.1) translateY(-10px); filter: blur(4px);
+}
+
+/* 38. Chevron Wobble */
+@keyframes wobble {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+.chevron-wobble:hover {
+  animation: wobble 0.4s ease-in-out infinite;
+}
+
+/* 37. Button Text Shift */
+.btn-text-shift span { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.btn-text-shift:hover span { transform: translateY(-2px); }
+
+/* Custom Scroll Momentum (Styling only, logic in component later) */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(177, 255, 41, 0.1); border-radius: 10px;
+  transition: all 0.3s;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(177, 255, 41, 0.3); }
+
+/* 39. Notifications Badge Pop */
+@keyframes badgePop {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-badge-pop {
+  animation: badgePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* 45. Notification Dropdown Cloth (Mocked structure) */
+.cloth-fold-enter-active {
+  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: top;
+}
+.cloth-fold-enter-from {
+  opacity: 0; transform: rotateX(-15deg) scaleY(0.9);
 }
 
 </style>
